@@ -80,7 +80,7 @@
     }
     .form-group input:focus {
       border-color: #3498db;
-      outline: none;
+      outline: 3px solid rgba(52, 152, 219, 0.3);
     }
     .login-btn {
       width: 100%;
@@ -96,6 +96,10 @@
     }
     .login-btn:hover {
       background: #2980b9;
+    }
+    .login-btn:disabled {
+      background: #95a5a6;
+      cursor: not-allowed;
     }
     .login-links {
       margin-top: 20px;
@@ -115,6 +119,33 @@
     }
     .logo img {
       height: 50px;
+      max-width: 100%;
+    }
+    .error-message {
+      color: #e74c3c;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+    .success-message {
+      color: #2ecc71;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+    /* Accessibility improvements */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #2c3e50;
+      color: white;
+      padding: 8px;
+      z-index: 100;
+      transition: top 0.3s;
+    }
+    .skip-link:focus {
+      top: 0;
     }
     @media (max-width: 768px) {
       .login-container {
@@ -127,40 +158,149 @@
   </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">انتقل إلى نموذج تسجيل الدخول</a>
   <div class="login-container">
-    <div class="login-left">
+    <div class="login-left" role="region" aria-label="معلومات عن المنصة">
       <h1>مرحبًا بك في LeenClasses</h1>
       <p>منصتك المتكاملة لإدارة العملية التعليمية بكل كفاءة واحترافية</p>
-      <ul>
-        <li>إدارة الفصول والطلاب بسهولة</li>
-        <li>نظام تقارير متكامل</li>
-        <li>فصول افتراضية متطورة</li>
-        <li>دعم فني على مدار الساعة</li>
+      <ul role="list">
+        <li role="listitem">إدارة الفصول والطلاب بسهولة</li>
+        <li role="listitem">نظام تقارير متكامل</li>
+        <li role="listitem">فصول افتراضية متطورة</li>
+        <li role="listitem">دعم فني على مدار الساعة</li>
       </ul>
     </div>
     <div class="login-right">
-      <div class="login-form">
+      <div class="login-form" id="main-content">
         <div class="logo">
-          <img src="images/logo.png" alt="LeenClasses">
+          <img src="images/logo.png" alt="شعار LeenClasses">
         </div>
         <h2>تسجيل الدخول إلى حسابك</h2>
-        <form>
+        <form id="loginForm">
           <div class="form-group">
-            <label>البريد الإلكتروني</label>
-            <input type="email" placeholder="ادخل بريدك الإلكتروني" required>
+            <label for="loginEmail">البريد الإلكتروني</label>
+            <input type="email" id="loginEmail" placeholder="ادخل بريدك الإلكتروني" required aria-required="true" autocomplete="email">
           </div>
           <div class="form-group">
-            <label>كلمة المرور</label>
-            <input type="password" placeholder="ادخل كلمة المرور" required>
+            <label for="loginPassword">كلمة المرور</label>
+            <input type="password" id="loginPassword" placeholder="ادخل كلمة المرور" required aria-required="true" autocomplete="current-password">
           </div>
-          <button type="submit" class="login-btn">تسجيل الدخول</button>
+          <button type="submit" class="login-btn" id="loginButton">
+            تسجيل الدخول
+          </button>
+          <div id="errorMessage" class="error-message" role="alert" aria-live="assertive"></div>
+          <div id="successMessage" class="success-message" role="status" aria-live="polite"></div>
         </form>
         <div class="login-links">
-          <a href="forgot-password.html">نسيت كلمة المرور؟</a>
-          <a href="register.html">إنشاء حساب جديد</a>
+          <a href="forgot-password.html" aria-label="استعادة كلمة المرور">نسيت كلمة المرور؟</a>
+          <a href="register.html" aria-label="إنشاء حساب جديد">إنشاء حساب جديد</a>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.firebasestorage.app",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Login form submission
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const loginBtn = document.getElementById('loginButton');
+      const errorElement = document.getElementById('errorMessage');
+      const successElement = document.getElementById('successMessage');
+      
+      // Reset messages
+      errorElement.textContent = '';
+      successElement.textContent = '';
+      
+      // Validate inputs
+      if (!email || !password) {
+        errorElement.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور';
+        return;
+      }
+      
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errorElement.textContent = 'صيغة البريد الإلكتروني غير صالحة';
+        return;
+      }
+      
+      // Disable button during login attempt
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> جاري تسجيل الدخول...';
+      
+      try {
+        // Sign in with email and password
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Check if email is verified
+        if (!user.emailVerified) {
+          await auth.signOut();
+          errorElement.textContent = 'الرجاء تفعيل حسابك عبر الرابط المرسل إلى بريدك الإلكتروني';
+          return;
+        }
+        
+        // Redirect to dashboard
+        successElement.textContent = 'تم تسجيل الدخول بنجاح، جاري التوجيه...';
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'تسجيل الدخول';
+        
+        // Handle different error cases
+        let errorMessage = 'حدث خطأ أثناء تسجيل الدخول';
+        switch(error.code) {
+          case 'auth/user-not-found':
+            errorMessage = 'لا يوجد حساب مرتبط بهذا البريد الإلكتروني';
+            break;
+          case 'auth/wrong-password':
+            errorMessage = 'كلمة المرور غير صحيحة';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'تم تجاوز عدد المحاولات المسموح بها. الرجاء المحاولة لاحقاً';
+            break;
+          case 'auth/user-disabled':
+            errorMessage = 'هذا الحساب معطل. الرجاء التواصل مع الدعم الفني';
+            break;
+          default:
+            errorMessage = error.message || errorMessage;
+        }
+        
+        errorElement.textContent = errorMessage;
+      }
+    });
+
+    // Check if user is already logged in
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in, redirect to dashboard
+        window.location.href = 'dashboard.html';
+      }
+    });
+  </script>
 </body>
 </html>
