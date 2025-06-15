@@ -18,6 +18,28 @@
       line-height: 1.6;
     }
     
+    /* Skip link styles */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #2c3e50;
+      color: white;
+      padding: 8px;
+      z-index: 100;
+      transition: top 0.3s;
+    }
+    
+    .skip-link:focus {
+      top: 0;
+    }
+    
+    /* Focus styles */
+    a:focus, button:focus, input:focus, select:focus, textarea:focus {
+      outline: 2px solid #3498db;
+      outline-offset: 2px;
+    }
+    
     header {
       background-color: #2c3e50;
       color: white;
@@ -285,6 +307,16 @@
       max-width: 350px;
     }
     
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
     .login-form input {
       width: 100%;
       padding: 10px;
@@ -412,7 +444,8 @@
   </style>
 </head>
 <body>
-  <header>
+  <a href="#main-content" class="skip-link">انتقل إلى المحتوى الرئيسي</a>
+  <header role="banner">
     <div class="container">
       <div class="header-content">
         <div style="text-align: right;">
@@ -422,243 +455,251 @@
         <div class="login-form">
           <h3 style="color: white; margin-bottom: 15px; text-align: center;">تسجيل الدخول</h3>
           <form id="loginForm">
-            <input type="email" placeholder="البريد الإلكتروني" id="loginEmail" required>
-            <input type="password" placeholder="كلمة المرور" id="loginPassword" required>
-            <button type="submit">دخول</button>
+            <div class="form-group">
+              <label for="loginEmail">البريد الإلكتروني</label>
+              <input type="email" id="loginEmail" placeholder="example@domain.com" required>
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">كلمة المرور</label>
+              <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" required>
+            </div>
+            <button type="submit" aria-label="تسجيل الدخول إلى الحساب">دخول</button>
           </form>
           <p style="margin-top: 10px; font-size: 0.9rem; text-align: center;">
-            <a href="#" id="forgotPassword" style="color: white;">نسيت كلمة المرور؟</a> | 
-            <a href="#" id="signupLink" style="color: white;">تسجيل جديد</a>
+            <a href="#" id="forgotPassword" aria-label="إعادة تعيين كلمة المرور" style="color: white;">نسيت كلمة المرور؟</a> | 
+            <a href="#" id="signupLink" aria-label="إنشاء حساب جديد" style="color: white;">تسجيل جديد</a>
           </p>
         </div>
       </div>
     </div>
   </header>
   
-  <div class="container">
-    <section>
-      <h2>مميزات المنصة</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <h3>تقارير أداء متقدمة</h3>
-          <p>احصل على تحليلات مفصلة عن أداء كل طالب، معدلات الحضور، التقدم في المواد، وتقارير مقارنة مع زملائه</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-user-tie"></i>
-          </div>
-          <h3>إدارة متكاملة للمدرسين</h3>
-          <p>نظام متكامل لإدارة فريق التدريس، توزيع المواد، تقييم الأداء، ومتابعة الجداول الزمنية</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-money-bill-wave"></i>
-          </div>
-          <h3>نظام مالي متكامل</h3>
-          <p>إدارة الفواتير، المدفوعات، العمولات، والتقارير المالية مع دعم متعدد طرق الدفع</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-video"></i>
-          </div>
-          <h3>فصل افتراضي متكامل</h3>
-          <p>بث حي عالي الجودة، تسجيلات تلقائية، سبورة تفاعلية، ومشاركة شاشة مع أدوات تعليمية متقدمة</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-mobile-alt"></i>
-          </div>
-          <h3>تطبيق جوال للطلاب</h3>
-          <p>تطبيق خاص بمنصتك على متجري آب ستور وجوجل بلاي باسمك وشعارك لطلابك</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-headset"></i>
-          </div>
-          <h3>دعم فني متخصص</h3>
-          <p>فريق دعم فني متخصص في المنصات التعليمية متاح 24/7 عبر الهاتف، البريد الإلكتروني والدردشة المباشرة</p>
-        </div>
-      </div>
-    </section>
-    
-    <section>
-      <h2>باقاتنا الشاملة</h2>
-      <p style="text-align: center; margin-bottom: 30px; font-size: 1.1rem;">اختر الباقة التي تناسب احتياجاتك بناءً على عدد الطلاب ومستوى الخدمات والدعم</p>
-      
-      <div class="pricing-tables" id="pricingContainer">
-        <!-- سيتم ملؤه ديناميكياً من Firebase -->
-      </div>
-    </section>
-    
-    <section style="background: #f8f9fa; padding: 50px 20px; margin-top: 40px;">
-      <div class="container">
-        <h2 style="text-align: center; border: none;">طلب نسخة تجريبية من LeenClasses</h2>
-        <div class="request-form">
-          <form id="contactForm">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>الاسم الكامل</label>
-                <input type="text" id="fullName" required>
-              </div>
-              <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="email" required>
-              </div>
-              <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="tel" id="phone" required>
-              </div>
-              <div class="form-group">
-                <label>اسم المؤسسة/المدرسة</label>
-                <input type="text" id="organization">
-              </div>
-              <div class="form-group">
-                <label>عدد الطلاب المتوقع</label>
-                <select id="studentsCount" required>
-                  <option value="أقل من 50">أقل من 50</option>
-                  <option value="50 - 150">50 - 150</option>
-                  <option value="150 - 300">150 - 300</option>
-                  <option value="أكثر من 300">أكثر من 300</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>الباقة المطلوبة</label>
-                <select id="plan" required>
-                  <option value="الباقة الأساسية">الباقة الأساسية</option>
-                  <option value="الباقة المتقدمة">الباقة المتقدمة</option>
-                  <option value="الباقة الاحترافية">الباقة الاحترافية</option>
-                  <option value="غير متأكد - أريد المشورة">غير متأكد - أريد المشورة</option>
-                </select>
-              </div>
+  <main id="main-content" role="main">
+    <div class="container">
+      <section>
+        <h2>مميزات المنصة</h2>
+        <div class="features-grid">
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line" aria-hidden="true"></i>
             </div>
-            <div class="form-group">
-              <label>ملاحظات إضافية</label>
-              <textarea id="notes"></textarea>
+            <h3>تقارير أداء متقدمة</h3>
+            <p>احصل على تحليلات مفصلة عن أداء كل طالب، معدلات الحضور، التقدم في المواد، وتقارير مقارنة مع زملائه</p>
+          </div>
+          
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-user-tie" aria-hidden="true"></i>
             </div>
-            <button type="submit" class="submit-btn">إرسال الطلب</button>
-          </form>
-        </div>
-      </div>
-    </section>
-    
-    <section>
-      <h2>نظام التقارير المتقدم</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-user-graduate"></i>
+            <h3>إدارة متكاملة للمدرسين</h3>
+            <p>نظام متكامل لإدارة فريق التدريس، توزيع المواد، تقييم الأداء، ومتابعة الجداول الزمنية</p>
           </div>
-          <h3>تقارير الطلاب</h3>
-          <p>تتبع تقدم كل طالب في كل مادة، معدل الحضور، المشاركة، والواجبات مع إشعارات للطلاب المتعثرين</p>
+          
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+            </div>
+            <h3>نظام مالي متكامل</h3>
+            <p>إدارة الفواتير، المدفوعات، العمولات، والتقارير المالية مع دعم متعدد طرق الدفع</p>
+          </div>
+          
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-video" aria-hidden="true"></i>
+            </div>
+            <h3>فصل افتراضي متكامل</h3>
+            <p>بث حي عالي الجودة، تسجيلات تلقائية، سبورة تفاعلية، ومشاركة شاشة مع أدوات تعليمية متقدمة</p>
+          </div>
+          
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-mobile-alt" aria-hidden="true"></i>
+            </div>
+            <h3>تطبيق جوال للطلاب</h3>
+            <p>تطبيق خاص بمنصتك على متجري آب ستور وجوجل بلاي باسمك وشعارك لطلابك</p>
+          </div>
+          
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-headset" aria-hidden="true"></i>
+            </div>
+            <h3>دعم فني متخصص</h3>
+            <p>فريق دعم فني متخصص في المنصات التعليمية متاح 24/7 عبر الهاتف، البريد الإلكتروني والدردشة المباشرة</p>
+          </div>
+        </div>
+      </section>
+      
+      <section>
+        <h2>باقاتنا الشاملة</h2>
+        <p style="text-align: center; margin-bottom: 30px; font-size: 1.1rem;">اختر الباقة التي تناسب احتياجاتك بناءً على عدد الطلاب ومستوى الخدمات والدعم</p>
+        
+        <div class="pricing-tables" id="pricingContainer">
+          <!-- سيتم ملؤه ديناميكياً من Firebase -->
+        </div>
+      </section>
+      
+      <section style="background: #f8f9fa; padding: 50px 20px; margin-top: 40px;">
+        <div class="container">
+          <h2 style="text-align: center; border: none;">طلب نسخة تجريبية من LeenClasses</h2>
+          <div class="request-form">
+            <form id="contactForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fullName">الاسم الكامل</label>
+                  <input type="text" id="fullName" required aria-required="true">
+                </div>
+                <div class="form-group">
+                  <label for="email">البريد الإلكتروني</label>
+                  <input type="email" id="email" required aria-required="true">
+                </div>
+                <div class="form-group">
+                  <label for="phone">رقم الهاتف</label>
+                  <input type="tel" id="phone" required aria-required="true">
+                </div>
+                <div class="form-group">
+                  <label for="organization">اسم المؤسسة/المدرسة</label>
+                  <input type="text" id="organization">
+                </div>
+                <div class="form-group">
+                  <label for="studentsCount">عدد الطلاب المتوقع</label>
+                  <select id="studentsCount" required aria-required="true">
+                    <option value="أقل من 50">أقل من 50</option>
+                    <option value="50 - 150">50 - 150</option>
+                    <option value="150 - 300">150 - 300</option>
+                    <option value="أكثر من 300">أكثر من 300</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="plan">الباقة المطلوبة</label>
+                  <select id="plan" required aria-required="true">
+                    <option value="الباقة الأساسية">الباقة الأساسية</option>
+                    <option value="الباقة المتقدمة">الباقة المتقدمة</option>
+                    <option value="الباقة الاحترافية">الباقة الاحترافية</option>
+                    <option value="غير متأكد - أريد المشورة">غير متأكد - أريد المشورة</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="notes">ملاحظات إضافية</label>
+                <textarea id="notes"></textarea>
+              </div>
+              <button type="submit" class="submit-btn">إرسال الطلب</button>
+            </form>
+          </div>
+        </div>
+      </section>
+      
+      <section>
+        <h2>نظام التقارير المتقدم</h2>
+        <div class="features-grid">
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-user-graduate" aria-hidden="true"></i>
+            </div>
+            <h3>تقارير الطلاب</h3>
+            <p>تتبع تقدم كل طالب في كل مادة، معدل الحضور، المشاركة، والواجبات مع إشعارات للطلاب المتعثرين</p>
+          </div>
+          
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-chart-pie" aria-hidden="true"></i>
+            </div>
+            <h3>تحليلات المواد</h3>
+            <p>تحليل أداء الطلاب في كل مادة، تحديد نقاط القوة والضعف، ومقارنة الأداء بين الفصول</p>
+          </div>
+          
+          <div class="feature-card" role="article">
+            <div class="feature-icon">
+              <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+            </div>
+            <h3>تقارير مالية</h3>
+            <p>تقارير مفصلة عن الإيرادات، المصروفات، المدفوعات المستحقة، وتحليلات الربحية</p>
+          </div>
+        </div>
+      </section>
+      
+      <section>
+        <h2>آراء عملائنا</h2>
+        <div class="testimonials" id="testimonialsContainer">
+          <!-- سيتم ملؤه ديناميكياً من Firebase -->
+        </div>
+      </section>
+      
+      <section>
+        <h2>الأسئلة الشائعة</h2>
+        <div class="faq-item" role="article">
+          <div class="faq-question" role="button" aria-expanded="false" aria-controls="faq1-answer" tabindex="0">
+            <span>هل يمكنني تغيير الباقة لاحقًا؟</span>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+          </div>
+          <div class="faq-answer" id="faq1-answer" role="region">
+            <p>نعم، يمكنك الترقية أو التخفيض بين الباقات في أي وقت حسب احتياجاتك، وسيتم تعديل الفاتورة بشكل تناسبي.</p>
+          </div>
         </div>
         
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-chart-pie"></i>
+        <div class="faq-item" role="article">
+          <div class="faq-question" role="button" aria-expanded="false" aria-controls="faq2-answer" tabindex="0">
+            <span>ما هي طرق الدفع المتاحة؟</span>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
           </div>
-          <h3>تحليلات المواد</h3>
-          <p>تحليل أداء الطلاب في كل مادة، تحديد نقاط القوة والضعف، ومقارنة الأداء بين الفصول</p>
+          <div class="faq-answer" id="faq2-answer" role="region">
+            <p>نحن نقبل الدفع بواسطة البطاقات الائتمانية (فيزا/ماستركارد)، التحويل البنكي، فودافون كاش، وحسابات PayPal.</p>
+          </div>
         </div>
         
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-file-invoice-dollar"></i>
+        <div class="faq-item" role="article">
+          <div class="faq-question" role="button" aria-expanded="false" aria-controls="faq3-answer" tabindex="0">
+            <span>هل هناك فترة تجريبية؟</span>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
           </div>
-          <h3>تقارير مالية</h3>
-          <p>تقارير مفصلة عن الإيرادات، المصروفات، المدفوعات المستحقة، وتحليلات الربحية</p>
+          <div class="faq-answer" id="faq3-answer" role="region">
+            <p>نعم، نقدم 14 يوم تجريبي مجاني لجميع الباقات لتجربة المنصة قبل الاشتراك.</p>
+          </div>
         </div>
-      </div>
-    </section>
-    
-    <section>
-      <h2>آراء عملائنا</h2>
-      <div class="testimonials" id="testimonialsContainer">
-        <!-- سيتم ملؤه ديناميكياً من Firebase -->
-      </div>
-    </section>
-    
-    <section>
-      <h2>الأسئلة الشائعة</h2>
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>هل يمكنني تغيير الباقة لاحقًا؟</span>
-          <i class="fas fa-chevron-down"></i>
+        
+        <div class="faq-item" role="article">
+          <div class="faq-question" role="button" aria-expanded="false" aria-controls="faq4-answer" tabindex="0">
+            <span>كيف يتم دعم وتدريب فريقنا؟</span>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+          </div>
+          <div class="faq-answer" id="faq4-answer" role="region">
+            <p>نوفر جلسات تدريبية عبر الإنترنت، أدلة استخدام مفصلة، وفريق دعم فني متخصص لضمان استفادتك القصوى من المنصة.</p>
+          </div>
         </div>
-        <div class="faq-answer">
-          <p>نعم، يمكنك الترقية أو التخفيض بين الباقات في أي وقت حسب احتياجاتك، وسيتم تعديل الفاتورة بشكل تناسبي.</p>
-        </div>
-      </div>
+      </section>
       
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>ما هي طرق الدفع المتاحة؟</span>
-          <i class="fas fa-chevron-down"></i>
-        </div>
-        <div class="faq-answer">
-          <p>نحن نقبل الدفع بواسطة البطاقات الائتمانية (فيزا/ماستركارد)، التحويل البنكي، فودافون كاش، وحسابات PayPal.</p>
-        </div>
-      </div>
-      
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>هل هناك فترة تجريبية؟</span>
-          <i class="fas fa-chevron-down"></i>
-        </div>
-        <div class="faq-answer">
-          <p>نعم، نقدم 14 يوم تجريبي مجاني لجميع الباقات لتجربة المنصة قبل الاشتراك.</p>
-        </div>
-      </div>
-      
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>كيف يتم دعم وتدريب فريقنا؟</span>
-          <i class="fas fa-chevron-down"></i>
-        </div>
-        <div class="faq-answer">
-          <p>نوفر جلسات تدريبية عبر الإنترنت، أدلة استخدام مفصلة، وفريق دعم فني متخصص لضمان استفادتك القصوى من المنصة.</p>
-        </div>
-      </div>
-    </section>
-    
-    <section style="text-align: center; margin-top: 60px; background: #f8f9fa; padding: 40px; border-radius: 10px;">
-      <h2 style="border: none;">جاهز لبدء منصتك التعليمية؟</h2>
-      <p style="font-size: 1.2rem; margin-bottom: 30px;">سجل الآن واحصل على شهرين مجانًا عند الاشتراك السنوي</p>
-      <a href="#" class="cta" style="max-width: 300px; margin: 0 auto; font-size: 1.2rem; padding: 20px;">
-        ابدأ تجربتك المجانية الآن
-      </a>
-    </section>
-  </div>
+      <section style="text-align: center; margin-top: 60px; background: #f8f9fa; padding: 40px; border-radius: 10px;">
+        <h2 style="border: none;">جاهز لبدء منصتك التعليمية؟</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">سجل الآن واحصل على شهرين مجانًا عند الاشتراك السنوي</p>
+        <a href="#" class="cta" style="max-width: 300px; margin: 0 auto; font-size: 1.2rem; padding: 20px;">
+          ابدأ تجربتك المجانية الآن
+        </a>
+      </section>
+    </div>
+  </main>
   
-  <footer>
+  <footer role="contentinfo">
     <div class="container">
       <div style="margin-bottom: 30px;">
         <h2 style="color: white; border: none;">LeenClasses</h2>
         <p>منصتك التعليمية المتكاملة لإدارة التدريس عبر الإنترنت</p>
       </div>
       
-      <div class="footer-links">
+      <nav class="footer-links" role="navigation">
         <a href="#">الصفحة الرئيسية</a>
         <a href="#">المميزات</a>
         <a href="#">الباقات</a>
         <a href="#">تواصل معنا</a>
         <a href="#">شروط الاستخدام</a>
         <a href="#">سياسة الخصوصية</a>
-      </div>
+      </nav>
       
       <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-linkedin"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#" aria-label="فيسبوك"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+        <a href="#" aria-label="تويتر"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+        <a href="#" aria-label="إنستجرام"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+        <a href="#" aria-label="لينكد إن"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+        <a href="#" aria-label="يوتيوب"><i class="fab fa-youtube" aria-hidden="true"></i></a>
       </div>
       
       <div style="margin-top: 30px; color: #bdc3c7; font-size: 0.9rem;">
@@ -675,82 +716,124 @@
   <script>
     // التهيئة باستخدام بياناتك
     const firebaseConfig = {
-      apiKey: "AIzaSyDwBWoj-T6VXnPxeE9k_jYscynybxp6I1g",
-      authDomain: "leenclasses-2022.firebaseapp.com",
-      projectId: "leenclasses-2022",
-      storageBucket: "leenclasses-2022.appspot.com",
-      messagingSenderId: "159615025935",
-      appId: "1:159615025935:web:ca599ce118c4ff260a747a",
-      measurementId: "G-4V4YHMBZME"
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.firebasestorage.app",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
     };
 
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+    const db = firebase.firestore(app);
+    const auth = firebase.auth(app);
+
+    // اختبار الاتصال
+    async function testFirebaseConnection() {
+      try {
+        const testRef = db.collection('connectionTest').doc('testDoc');
+        await testRef.set({
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          message: "Testing Firebase Connection"
+        });
+        
+        const doc = await testRef.get();
+        console.log("✅ اتصال Firebase ناجح:", doc.data());
+        return true;
+      } catch (error) {
+        console.error("❌ فشل الاتصال بـ Firebase:", error);
+        return false;
+      }
+    }
+
+    // تنفيذ الاختبار عند تحميل الصفحة
+    window.addEventListener('load', async () => {
+      const isConnected = await testFirebaseConnection();
+      if (!isConnected) {
+        alert("حدث خطأ في الاتصال بقاعدة البيانات. الرجاء التحقق من console لمزيد من التفاصيل.");
+      }
+    });
 
     // دالة لتحميل الباقات من Firebase
     async function loadPricingPlans() {
-    const pricingContainer = document.getElementById('pricingContainer');
-    
-    try {
-      const querySnapshot = await db.collection("pricing")
-        .where("active", "==", true)
-        .get();
+      const pricingContainer = document.getElementById('pricingContainer');
+      
+      try {
+        const querySnapshot = await db.collection("pricingPlans").orderBy("order").get();
+        
+        if (querySnapshot.empty) {
+          pricingContainer.innerHTML = `<p class="no-data">لا توجد باقات متاحة حالياً</p>`;
+          return;
+        }
 
-      if (querySnapshot.empty) {
-        console.log("No active pricing plans found");
-        pricingContainer.innerHTML = `<p class="no-data">لا توجد باقات متاحة حالياً</p>`;
-        return;
+        pricingContainer.innerHTML = querySnapshot.docs.map(doc => {
+          const plan = doc.data();
+          return `
+            <div class="pricing-table ${plan.popular ? 'popular' : ''}" role="article">
+              ${plan.popular ? '<div class="popular-tag">الأكثر شيوعاً</div>' : ''}
+              <div class="pricing-header">
+                <h3>${plan.name}</h3>
+                <div class="price">${plan.price} <span>${plan.currency}/شهر</span></div>
+              </div>
+              <div class="pricing-body">
+                <ul class="pricing-features">
+                  ${plan.features.map(f => `
+                    <li class="${f.available ? '' : 'disabled'}">${f.text}</li>
+                  `).join('')}
+                </ul>
+                <a href="#" class="cta" aria-label="اشترك في باقة ${plan.name}">اشترك الآن</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        pricingContainer.innerHTML = `
+          <div class="error-msg">
+            خطأ في تحميل الباقات: ${error.message}
+          </div>
+        `;
       }
-
-      querySnapshot.forEach(doc => {
-        console.log("Pricing plan:", doc.id, doc.data()); // طباعة البيانات للتأكد
-      });
-
-      // ... rest of your code to display pricing plans
-
-    } catch (error) {
-      console.error("Detailed error loading pricing:", error);
-      pricingContainer.innerHTML = `
-        <div class="error-msg">
-          خطأ في تحميل الباقات: ${error.message}
-        </div>
-      `;
     }
-  }
 
     // دالة لتحميل آراء العملاء من Firebase
     async function loadTestimonials() {
-    const testimonialsContainer = document.getElementById('testimonialsContainer');
-    
-    try {
-      const querySnapshot = await db.collection("testimonials")
-        .where("approved", "==", true)
-        .limit(4)
-        .get();
+      const container = document.getElementById('testimonialsContainer');
+      
+      try {
+        const querySnapshot = await db.collection("testimonials")
+          .where("approved", "==", true)
+          .limit(4)
+          .get();
 
-      if (querySnapshot.empty) {
-        console.log("No approved testimonials found");
-        testimonialsContainer.innerHTML = `<p class="no-data">لا توجد آراء عملاء معتمدة</p>`;
-        return;
+        container.innerHTML = querySnapshot.docs.map(doc => {
+          const testimonial = doc.data();
+          return `
+            <div class="testimonial" role="article">
+              <div class="testimonial-header">
+                <img src="${testimonial.photoURL || 'https://i.imgur.com/JQWUQfG.png'}" 
+                     class="testimonial-img" 
+                     alt="${testimonial.name || 'عميل'}">
+                <div>
+                  <h4>${testimonial.name}</h4>
+                  <div class="testimonial-rating" aria-label="التقييم ${testimonial.rating} من 5">
+                    ${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}
+                  </div>
+                </div>
+              </div>
+              <p>"${testimonial.text}"</p>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        container.innerHTML = `
+          <div class="error-msg">
+            خطأ في تحميل آراء العملاء: ${error.message}
+          </div>
+        `;
       }
-
-      querySnapshot.forEach(doc => {
-        console.log("Testimonial:", doc.id, doc.data()); // طباعة البيانات للتأكد
-      });
-
-      // ... rest of your code to display testimonials
-
-    } catch (error) {
-      console.error("Detailed error loading testimonials:", error);
-      testimonialsContainer.innerHTML = `
-        <div class="error-msg">
-          خطأ في تحميل آراء العملاء: ${error.message}
-        </div>
-      `;
     }
-  }
 
     // دالة لإعداد نموذج الاتصال
     function setupContactForm() {
@@ -820,13 +903,24 @@
             if (otherItem !== item && otherItem.classList.contains('active')) {
               otherItem.classList.remove('active');
               otherItem.querySelector('.faq-question i').className = 'fas fa-chevron-down';
+              otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
             }
           });
           
           // تبديل العنصر الحالي
           item.classList.toggle('active');
           const icon = question.querySelector('i');
-          icon.className = item.classList.contains('active') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+          const isExpanded = item.classList.contains('active');
+          icon.className = isExpanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+          question.setAttribute('aria-expanded', isExpanded.toString());
+        });
+
+        // Enable keyboard navigation
+        question.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            question.click();
+          }
         });
       });
     }
@@ -924,6 +1018,7 @@
         });
       }
     }
+
     // التحقق من حالة تسجيل الدخول مع استثناء لصفحة index
     auth.onAuthStateChanged((user) => {
       // إذا كان المستخدم مسجل الدخول وكان في صفحة index

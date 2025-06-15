@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم - إدارة الباقات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: "Cairo", sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #3498db;
+    }
+    
+    .admin-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: "Cairo", sans-serif;
+      transition: border 0.3s;
+    }
+    
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #3498db;
+      outline: 2px solid rgba(52, 152, 219, 0.3);
+    }
+    
+    .feature-item {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border-left: 4px solid #3498db;
+    }
+    
+    .submit-btn {
+      background: #2ecc71;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .submit-btn:hover {
+      background: #27ae60;
+    }
+    
+    button {
+      font-family: "Cairo", sans-serif;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    #addFeatureBtn {
+      background: #3498db;
+      color: white;
+      border: none;
+      margin: 15px 0;
+    }
+    
+    #addFeatureBtn:hover {
+      background: #2980b9;
+    }
+    
+    .delete-feature-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      margin-top: 10px;
+    }
+    
+    .delete-feature-btn:hover {
+      background: #c0392b;
+    }
+    
+    /* Accessibility improvements */
+    a:focus,
+    button:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #3498db;
+      outline-offset: 2px;
+    }
+    
+    [aria-disabled="true"] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 15px;
+      }
+      
+      .admin-panel {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header role="banner">
+    <div class="container">
+      <h1 style="color: white;">لوحة تحكم LeenClasses</h1>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <div class="container">
+      <h2 id="formTitle">إضافة باقة جديدة</h2>
+      
+      <div class="admin-panel">
+        <form id="pricingForm">
+          <input type="hidden" id="planId">
+          
+          <div class="form-group">
+            <label for="planName">اسم الباقة</label>
+            <input type="text" id="planName" required aria-required="true">
+          </div>
+          
+          <div class="form-group">
+            <label for="planPrice">السعر</label>
+            <input type="number" id="planPrice" required aria-required="true" min="0" step="0.01">
+          </div>
+          
+          <div class="form-group">
+            <label for="planCurrency">العملة</label>
+            <select id="planCurrency" required aria-required="true">
+              <option value="ج.م">جنيه مصري</option>
+              <option value="$">دولار</option>
+              <option value="€">يورو</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="planOrder">ترتيب العرض</label>
+            <input type="number" id="planOrder" required aria-required="true" min="1">
+          </div>
+          
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="planPopular" aria-label="وضع مميز (الأكثر شيوعاً)"> 
+              وضع مميز (الأكثر شيوعاً)
+            </label>
+          </div>
+          
+          <h3>المميزات</h3>
+          <div id="featuresContainer" role="region" aria-live="polite">
+            <!-- سيتم إضافة المميزات هنا -->
+          </div>
+          
+          <button type="button" id="addFeatureBtn" aria-label="إضافة ميزة جديدة">
+            <i class="fas fa-plus" aria-hidden="true"></i> إضافة ميزة جديدة
+          </button>
+          
+          <button type="submit" class="submit-btn" id="savePlanBtn">
+            حفظ الباقة
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.firebasestorage.app",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Check authentication and admin status
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      
+      // Check if user is admin (you'll need to implement this based on your user roles)
+      try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        if (!userDoc.exists || userDoc.data().role !== "admin") {
+          alert("ليس لديك صلاحيات الدخول إلى هذه الصفحة");
+          window.location.href = "dashboard.html";
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        window.location.href = "dashboard.html";
+      }
+    });
+
+    // Function to add new feature fields
+    document.getElementById('addFeatureBtn').addEventListener('click', () => {
+      const container = document.getElementById('featuresContainer');
+      const featureId = Date.now();
+      
+      container.insertAdjacentHTML('beforeend', `
+        <div class="feature-item" data-id="${featureId}" role="group" aria-labelledby="feature-${featureId}-label">
+          <div class="form-group">
+            <label id="feature-${featureId}-label">ميزة جديدة</label>
+            <input type="text" class="feature-text" required aria-required="true" aria-labelledby="feature-${featureId}-label">
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" class="feature-available" checked aria-label="متاحة في هذه الباقة">
+              متاحة في هذه الباقة
+            </label>
+          </div>
+          <button type="button" class="delete-feature-btn" onclick="removeFeature(${featureId})" aria-label="حذف هذه الميزة">
+            <i class="fas fa-trash" aria-hidden="true"></i> حذف الميزة
+          </button>
+          <hr aria-hidden="true">
+        </div>
+      `);
+      
+      // Focus on the new feature input
+      container.lastElementChild.querySelector('.feature-text').focus();
+    });
+
+    // Function to remove feature
+    window.removeFeature = (id) => {
+      const feature = document.querySelector(`.feature-item[data-id="${id}"]`);
+      if (feature) {
+        feature.remove();
+      }
+    };
+
+    // Function to save/update plan
+    document.getElementById('pricingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const saveBtn = document.getElementById('savePlanBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> جاري الحفظ...';
+      
+      // Validate form
+      const featureItems = document.querySelectorAll('.feature-item');
+      if (featureItems.length === 0) {
+        alert("الرجاء إضافة مميزات على الأقل واحدة للباقة");
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'حفظ الباقة';
+        return;
+      }
+      
+      // Collect features data
+      const features = Array.from(featureItems).map(item => ({
+        text: item.querySelector('.feature-text').value.trim(),
+        available: item.querySelector('.feature-available').checked
+      }));
+      
+      // Validate feature texts
+      for (const feature of features) {
+        if (!feature.text) {
+          alert("الرجاء إدخال نص لكل ميزة");
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'حفظ الباقة';
+          return;
+        }
+      }
+      
+      // Prepare plan data
+      const planData = {
+        name: document.getElementById('planName').value.trim(),
+        price: parseFloat(document.getElementById('planPrice').value),
+        currency: document.getElementById('planCurrency').value,
+        order: parseInt(document.getElementById('planOrder').value),
+        popular: document.getElementById('planPopular').checked,
+        features: features,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      try {
+        const planId = document.getElementById('planId').value;
+        
+        if (planId) {
+          // Update existing plan
+          await db.collection("pricingPlans").doc(planId).update(planData);
+          alert("تم تحديث الباقة بنجاح");
+        } else {
+          // Add new plan
+          planData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection("pricingPlans").add(planData);
+          alert("تم إضافة الباقة بنجاح");
+        }
+        
+        // Redirect to pricing list page
+        window.location.href = "pricing.html";
+      } catch (error) {
+        console.error("Error saving plan:", error);
+        alert("حدث خطأ أثناء حفظ الباقة: " + error.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'حفظ الباقة';
+      }
+    });
+
+    // Initialize page for editing if ID exists
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const planId = urlParams.get('id');
+      
+      if (planId) {
+        document.getElementById('formTitle').textContent = "تعديل الباقة";
+        
+        try {
+          const doc = await db.collection("pricingPlans").doc(planId).get();
+          if (doc.exists) {
+            const plan = doc.data();
+            
+            document.getElementById('planId').value = planId;
+            document.getElementById('planName').value = plan.name;
+            document.getElementById('planPrice').value = plan.price;
+            document.getElementById('planCurrency').value = plan.currency;
+            document.getElementById('planOrder').value = plan.order;
+            document.getElementById('planPopular').checked = plan.popular || false;
+            
+            const container = document.getElementById('featuresContainer');
+            container.innerHTML = '';
+            
+            plan.features.forEach((feature, index) => {
+              const featureId = Date.now() + index;
+              container.insertAdjacentHTML('beforeend', `
+                <div class="feature-item" data-id="${featureId}" role="group" aria-labelledby="feature-${featureId}-label">
+                  <div class="form-group">
+                    <label id="feature-${featureId}-label">الميزة ${index + 1}</label>
+                    <input type="text" class="feature-text" value="${feature.text}" required aria-required="true" aria-labelledby="feature-${featureId}-label">
+                  </div>
+                  <div class="form-group">
+                    <label>
+                      <input type="checkbox" class="feature-available" ${feature.available ? 'checked' : ''} aria-label="متاحة في هذه الباقة">
+                      متاحة في هذه الباقة
+                    </label>
+                  </div>
+                  <button type="button" class="delete-feature-btn" onclick="removeFeature(${featureId})" aria-label="حذف هذه الميزة">
+                    <i class="fas fa-trash" aria-hidden="true"></i> حذف الميزة
+                  </button>
+                  <hr aria-hidden="true">
+                </div>
+              `);
+            });
+          } else {
+            alert("الباقة المطلوبة غير موجودة");
+            window.location.href = "pricing.html";
+          }
+        } catch (error) {
+          console.error("Error loading plan:", error);
+          alert("حدث خطأ أثناء تحميل بيانات الباقة");
+          window.location.href = "pricing.html";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
