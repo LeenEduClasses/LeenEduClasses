@@ -30,6 +30,15 @@
       transition: top 0.3s;
     }
     
+  .error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    padding: 8px;
+    background-color: #fdecea;
+    border-radius: 4px;
+  }
     .skip-link:focus {
       top: 0;
     }
@@ -457,17 +466,18 @@
           <form id="loginForm">
             <div class="form-group">
               <label for="loginEmail">البريد الإلكتروني</label>
-              <input type="email" id="loginEmail" placeholder="example@domain.com" required>
+              <input type="email" id="loginEmail" placeholder="example@domain.com" required autocomplete="email">
             </div>
             <div class="form-group">
               <label for="loginPassword">كلمة المرور</label>
-              <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" required>
+              <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" required autocomplete="current-password">
             </div>
-            <button type="submit" aria-label="تسجيل الدخول إلى الحساب">دخول</button>
+            <button type="submit" id="loginBtn">دخول</button>
+            <div id="loginError" class="error-message" style="display: none;"></div>
           </form>
           <p style="margin-top: 10px; font-size: 0.9rem; text-align: center;">
-            <a href="#" id="forgotPassword" aria-label="إعادة تعيين كلمة المرور" style="color: white;">نسيت كلمة المرور؟</a> | 
-            <a href="#" id="signupLink" aria-label="إنشاء حساب جديد" style="color: white;">تسجيل جديد</a>
+            <a href="#" id="forgotPassword" style="color: white;">نسيت كلمة المرور؟</a> | 
+            <a href="#" id="signupLink" style="color: white;">تسجيل جديد</a>
           </p>
         </div>
       </div>
@@ -725,11 +735,117 @@
       measurementId: "G-WEK2KG58NM"
     };
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
-    const auth = firebase.auth(app);
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+    // Enhanced login function
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const loginBtn = document.getElementById('loginBtn');
+    const errorElement = document.getElementById('loginError');
+    
+    // Reset error message
+    errorElement.style.display = 'none';
+    errorElement.textContent = '';
+    
+    // Validate inputs
+    if (!email || !password) {
+      showError('الرجاء إدخال البريد الإلكتروني وكلمة المرور');
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showError('صيغة البريد الإلكتروني غير صالحة');
+      return;
+    }
+    
+    if (password.length < 6) {
+      showError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      return;
+    }
+    
+    // Disable button during login attempt
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
+    
+    try {
+      // Sign in with email and password
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+      
+      // Check if email is verified (if required)
+      if (!user.emailVerified) {
+        await auth.signOut();
+        showError('الرجاء تفعيل حسابك عبر الرابط المرسل إلى بريدك الإلكتروني');
+        return;
+      }
+      
+      // Login successful - redirect to dashboard
+      window.location.href = 'dashboard.html';
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      handleLoginError(error);
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'دخول';
+    }
+  });
 
+  function showError(message) {
+    const errorElement = document.getElementById('loginError');
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+  }
+
+  function handleLoginError(error) {
+    let errorMessage = 'حدث خطأ أثناء تسجيل الدخول';
+    
+    switch(error.code) {
+      case 'auth/invalid-login-credentials':
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+        break;
+      case 'auth/too-many-requests':
+        errorMessage = 'تم تجاوز عدد المحاولات المسموح بها. الرجاء المحاولة لاحقاً';
+        break;
+      case 'auth/user-disabled':
+        errorMessage = 'هذا الحساب معطل. الرجاء التواصل مع الدعم الفني';
+        break;
+      default:
+        errorMessage = error.message || errorMessage;
+    }
+    
+    showError(errorMessage);
+  }
+
+  // Password reset functionality
+  document.getElementById('forgotPassword').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = prompt('الرجاء إدخال بريدك الإلكتروني لإرسال رابط إعادة التعيين:');
+    
+    if (email) {
+      try {
+        await auth.sendPasswordResetEmail(email);
+        alert('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني');
+      } catch (error) {
+        alert('حدث خطأ: ' + (error.message || 'تعذر إرسال رابط التعيين'));
+      }
+    }
+  });
+
+  // Check if user is already logged in
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      // User is signed in, redirect to dashboard
+      window.location.href = 'dashboard.html';
+    }
+  });
     // اختبار الاتصال
     async function testFirebaseConnection() {
       try {
