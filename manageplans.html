@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeenClasses - نظام إدارة الباقات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Cairo', sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    /* أنماط لوحة التحكم */
+    .admin-panel {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin: 30px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    
+    .form-group input[type="checkbox"] {
+      width: auto;
+      margin-left: 10px;
+    }
+    
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background-color: #2980b9;
+    }
+    
+    .plans-list {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .plan-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border: 1px solid #eee;
+    }
+    
+    .plan-card h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .plan-card p {
+      margin-bottom: 15px;
+    }
+    
+    .plan-card button {
+      margin-right: 10px;
+      padding: 8px 15px;
+    }
+    
+    .plan-card button:last-child {
+      background-color: #e74c3c;
+    }
+    
+    .plan-card button:last-child:hover {
+      background-color: #c0392b;
+    }
+    
+    .login-form {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>LeenClasses - نظام إدارة الباقات</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- نموذج تسجيل الدخول -->
+    <div id="loginSection" class="login-form">
+      <h2>تسجيل الدخول</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit">دخول</button>
+      </form>
+    </div>
+
+    <!-- لوحة الإدارة (تظهر بعد التسجيل) -->
+    <div id="adminSection" class="hidden">
+      <div class="admin-panel">
+        <h2><i class="fas fa-cogs"></i> لوحة إدارة الباقات</h2>
+        
+        <form id="pricingForm">
+          <input type="hidden" id="planId">
+          
+          <div class="form-group">
+            <label>اسم الباقة</label>
+            <input type="text" id="planName" required>
+          </div>
+          
+          <div class="form-group">
+            <label>السعر</label>
+            <input type="number" id="planPrice" required>
+          </div>
+          
+          <div class="form-group">
+            <label>العملة</label>
+            <select id="planCurrency" required>
+              <option value="ريال">ريال سعودي</option>
+              <option value="دينار">دينار كويتي</option>
+              <option value="درهم">درهم إماراتي</option>
+              <option value="دولار">دولار أمريكي</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>الوصف</label>
+            <textarea id="planDescription" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>مفعلة</label>
+            <input type="checkbox" id="planActive" checked>
+          </div>
+          
+          <div class="form-group">
+            <label>ترتيب العرض</label>
+            <input type="number" id="planOrder" value="0">
+          </div>
+          
+          <button type="submit" id="saveBtn">حفظ الباقة</button>
+          <button type="button" id="cancelBtn" style="background: #95a5a6">إلغاء</button>
+        </form>
+        
+        <div class="plans-list" id="plansList">
+          <!-- سيتم ملؤها بالباقات من Firebase -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // التهيئة
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwBWoj-T6VXnPxeE9k_jYscynybxp6I1g",
+      authDomain: "leenclasses-2022.firebaseapp.com",
+      projectId: "leenclasses-2022",
+      storageBucket: "leenclasses-2022.appspot.com",
+      messagingSenderId: "159615025935",
+      appId: "1:159615025935:web:ca599ce118c4ff260a747a",
+      measurementId: "G-4V4YHMBZME"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // عناصر واجهة المستخدم
+    const loginSection = document.getElementById('loginSection');
+    const adminSection = document.getElementById('adminSection');
+    const loginForm = document.getElementById('loginForm');
+    const pricingForm = document.getElementById('pricingForm');
+    const plansList = document.getElementById('plansList');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    // حالة التطبيق
+    let editingPlanId = null;
+
+    // ========== تسجيل الدخول ==========
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+      } catch (error) {
+        alert(`خطأ في التسجيل: ${error.message}`);
+      }
+    });
+
+    // ========== إدارة الباقات ==========
+    // عرض الباقات
+    async function renderPlans() {
+      try {
+        const snapshot = await db.collection("pricing").orderBy("order", "asc").get();
+        plansList.innerHTML = '';
+        
+        if (snapshot.empty) {
+          plansList.innerHTML = '<p>لا توجد باقات متاحة</p>';
+          return;
+        }
+        
+        snapshot.forEach(doc => {
+          const plan = doc.data();
+          plansList.innerHTML += `
+            <div class="plan-card">
+              <h3>${plan.name}</h3>
+              <p>السعر: ${plan.price} ${plan.currency}</p>
+              <p>${plan.description || ''}</p>
+              <p>الحالة: ${plan.active ? 'مفعلة' : 'غير مفعلة'}</p>
+              <button onclick="startEditPlan('${doc.id}')">تعديل</button>
+              <button onclick="deletePlan('${doc.id}')">حذف</button>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error("Error loading plans:", error);
+      }
+    }
+
+    // بدء التعديل
+    window.startEditPlan = async (planId) => {
+      const doc = await db.collection("pricing").doc(planId).get();
+      const plan = doc.data();
+      
+      document.getElementById('planId').value = planId;
+      document.getElementById('planName').value = plan.name;
+      document.getElementById('planPrice').value = plan.price;
+      document.getElementById('planCurrency').value = plan.currency || 'ريال';
+      document.getElementById('planDescription').value = plan.description || '';
+      document.getElementById('planActive').checked = plan.active !== false;
+      document.getElementById('planOrder').value = plan.order || 0;
+      
+      document.getElementById('saveBtn').textContent = 'تحديث الباقة';
+      editingPlanId = planId;
+    };
+
+    // حذف الباقة
+    window.deletePlan = async (planId) => {
+      if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
+        try {
+          await db.collection("pricing").doc(planId).delete();
+          renderPlans();
+        } catch (error) {
+          alert(`خطأ في الحذف: ${error.message}`);
+        }
+      }
+    };
+
+    // حفظ/تحديث الباقة
+    pricingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const planData = {
+        name: document.getElementById('planName').value,
+        price: Number(document.getElementById('planPrice').value),
+        currency: document.getElementById('planCurrency').value,
+        description: document.getElementById('planDescription').value,
+        active: document.getElementById('planActive').checked,
+        order: Number(document.getElementById('planOrder').value) || 0,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      try {
+        if (editingPlanId) {
+          await db.collection("pricing").doc(editingPlanId).update(planData);
+        } else {
+          await db.collection("pricing").add(planData);
+        }
+        
+        pricingForm.reset();
+        editingPlanId = null;
+        document.getElementById('saveBtn').textContent = 'حفظ الباقة';
+        renderPlans();
+      } catch (error) {
+        alert(`خطأ في الحفظ: ${error.message}`);
+      }
+    });
+
+    // إلغاء التعديل
+    cancelBtn.addEventListener('click', () => {
+      pricingForm.reset();
+      editingPlanId = null;
+      document.getElementById('saveBtn').textContent = 'حفظ الباقة';
+    });
+
+    // ========== إدارة حالة المستخدم ==========
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginSection.classList.add('hidden');
+        adminSection.classList.remove('hidden');
+        renderPlans();
+      } else {
+        loginSection.classList.remove('hidden');
+        adminSection.classList.add('hidden');
+      }
+    });
+
+    // ========== التهيئة الأولية ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      // يمكنك إضافة أي تهيئة إضافية هنا
+    });
+  </script>
+</body>
+</html>
