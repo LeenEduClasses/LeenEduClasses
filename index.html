@@ -840,10 +840,16 @@
   });
 
   // Check if user is already logged in
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      // User is signed in, redirect to dashboard
+    auth.onAuthStateChanged((user) => {
+    // Only redirect if user is trying to access a protected page (not index.html)
+    if (user && !window.location.pathname.endsWith('index.html')) {
       window.location.href = 'dashboard.html';
+    }
+    
+    // If on index.html and logged in, just update UI but don't redirect
+    if (user && window.location.pathname.endsWith('index.html')) {
+      // Optionally show a "Welcome back" message or dashboard link
+      console.log("User is logged in but staying on index by choice");
     }
   });
     // اختبار الاتصال
