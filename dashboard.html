@@ -362,6 +362,8 @@
           <li><a href="schedule.html"><i class="fas fa-calendar-alt"></i> <span>الجدول</span></a></li>
           <li><a href="reports.html"><i class="fas fa-chart-bar"></i> <span>التقارير</span></a></li>
           <li><a href="finance.html"><i class="fas fa-money-bill-wave"></i> <span>المالية</span></a></li>
+          <li><a href="edit-pricing.html"><i class="fas fa-tags"></i> <span>إدارة الباقات</span></a></li>
+
         </ul>
         <h3>الإعدادات</h3>
         <ul>
@@ -497,13 +499,27 @@
 
     // التحقق من المصادقة
     auth.onAuthStateChanged(async (user) => {
-      const user = auth.currentUser;
-      const uid = user?.uid;
-      if (!uid) {
-        console.error("لم يتم العثور على UID");
+      if (!user) {
         window.location.href = 'index.html';
         return;
       }
+
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (!userDoc.exists || userDoc.data().role !== 'admin') {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // تحميل بيانات لوحة التحكم
+        await loadDashboardData();
+
+      } catch (error) {
+        console.error('Error:', error);
+        window.location.href = 'index.html';
+      }
+    });
       
       if (!user || user.uid !== uid) {
         window.location.href = 'index.html';

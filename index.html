@@ -1168,6 +1168,29 @@
       } catch (error) {
         console.error('Error initializing page:', error);
       }
+
+    // دالة للانتقال إلى لوحة التحكم
+    function redirectToDashboard() {
+      const user = auth.currentUser;
+      if (user) {
+        window.location.href = 'dashboard.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    }
+
+    // تعديل رابط الدخول في الصفحة الرئيسية
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginLink = document.getElementById('loginLink');
+      if (loginLink) {
+        loginLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          redirectToDashboard();
+        });
+      }
+    });
+
+
     });
   </script>
 </body>
