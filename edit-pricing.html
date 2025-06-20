@@ -41,6 +41,14 @@
       border-radius: 8px;
       padding: 30px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .plans-list {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     .form-group {
@@ -132,6 +140,133 @@
       background: #c0392b;
     }
     
+    .plan-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-top: 3px solid #3498db;
+    }
+    
+    .plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .plan-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .plan-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #27ae60;
+    }
+    
+    .plan-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .edit-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+    }
+    
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+    }
+    
+    .plan-features {
+      list-style: none;
+      margin-top: 15px;
+    }
+    
+    .plan-features li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+    }
+    
+    .plan-features li:last-child {
+      border-bottom: none;
+    }
+    
+    .feature-available {
+      color: #2ecc71;
+      margin-left: 10px;
+    }
+    
+    .feature-unavailable {
+      color: #e74c3c;
+      margin-left: 10px;
+      text-decoration: line-through;
+    }
+    
+    .popular-badge {
+      background: #f39c12;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-right: 10px;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .modal-title {
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .cancel-btn {
+      background: #95a5a6;
+      color: white;
+    }
+    
+    .confirm-btn {
+      background: #e74c3c;
+      color: white;
+    }
+    
     /* Accessibility improvements */
     a:focus,
     button:focus,
@@ -165,8 +300,19 @@
         padding: 0 15px;
       }
       
-      .admin-panel {
+      .admin-panel, .plans-list {
         padding: 20px;
+      }
+      
+      .plan-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .plan-actions {
+        width: 100%;
+        justify-content: flex-end;
       }
     }
   </style>
@@ -180,7 +326,7 @@
 
   <main id="main-content" role="main">
     <div class="container">
-      <h2 id="formTitle">إضافة باقة جديدة</h2>
+      <h2 id="formTitle">إدارة الباقات</h2>
       
       <div class="admin-panel">
         <form id="pricingForm">
@@ -231,8 +377,30 @@
           </button>
         </form>
       </div>
+      
+      <div class="plans-list">
+        <h3>الباقات الحالية</h3>
+        <div id="plansContainer">
+          <!-- سيتم عرض الباقات هنا -->
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> جاري تحميل الباقات...
+          </div>
+        </div>
+      </div>
     </div>
   </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
+    <div class="modal-content">
+      <h3 id="modalTitle" class="modal-title">تأكيد الحذف</h3>
+      <p id="modalDescription">هل أنت متأكد أنك تريد حذف هذه الباقة؟ لا يمكن التراجع عن هذا الإجراء.</p>
+      <div class="modal-actions">
+        <button id="cancelDelete" class="cancel-btn">إلغاء</button>
+        <button id="confirmDelete" class="confirm-btn">حذف</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
@@ -256,6 +424,13 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
+    // Global variables
+    let currentPlanToDelete = null;
+    const plansContainer = document.getElementById('plansContainer');
+    const deleteModal = document.getElementById('deleteModal');
+    const cancelDeleteBtn = document.getElementById('cancelDelete');
+    const confirmDeleteBtn = document.getElementById('confirmDelete');
+
     // Check authentication and admin status
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
@@ -276,6 +451,7 @@
         
         // إذا كان مسؤولاً ومسجلاً دخوله، استمر في تحميل الصفحة
         initializePage();
+        loadPlans();
         
       } catch (error) {
         console.error("Error checking admin status:", error);
@@ -284,12 +460,162 @@
     });
 
     function initializePage() {
-      // كود تحميل الباقة هنا...
+      // Initialize event listeners
+      document.getElementById('addFeatureBtn').addEventListener('click', addNewFeature);
+      cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+      confirmDeleteBtn.addEventListener('click', confirmDeletePlan);
+      
+      // Check if we're editing an existing plan
+      const urlParams = new URLSearchParams(window.location.search);
+      const planId = urlParams.get('id');
+      
+      if (planId) {
+        loadPlanForEditing(planId);
+      } else {
+        resetForm();
+      }
     }
 
+    // Function to load all plans
+    async function loadPlans() {
+      try {
+        const querySnapshot = await db.collection("pricingPlans")
+          .orderBy("order")
+          .get();
+        
+        if (querySnapshot.empty) {
+          plansContainer.innerHTML = '<p class="no-plans">لا توجد باقات متاحة حالياً</p>';
+          return;
+        }
+        
+        plansContainer.innerHTML = '';
+        
+        querySnapshot.forEach(doc => {
+          const plan = doc.data();
+          displayPlanCard(doc.id, plan);
+        });
+        
+      } catch (error) {
+        console.error("Error loading plans:", error);
+        plansContainer.innerHTML = `
+          <div class="error-message">
+            حدث خطأ أثناء تحميل الباقات: ${error.message}
+          </div>
+        `;
+      }
+    }
 
-    // Function to add new feature fields
-    document.getElementById('addFeatureBtn').addEventListener('click', () => {
+    // Function to display a plan card
+    function displayPlanCard(planId, plan) {
+      const planCard = document.createElement('div');
+      planCard.className = 'plan-card';
+      planCard.innerHTML = `
+        <div class="plan-header">
+          <div>
+            <span class="plan-title">
+              ${plan.popular ? '<span class="popular-badge">الأكثر شيوعاً</span>' : ''}
+              ${plan.name}
+            </span>
+            <span class="plan-price">${plan.price} ${plan.currency}</span>
+          </div>
+          <div class="plan-actions">
+            <button class="edit-btn" data-id="${planId}">
+              <i class="fas fa-edit"></i> تعديل
+            </button>
+            <button class="delete-btn" data-id="${planId}">
+              <i class="fas fa-trash"></i> حذف
+            </button>
+          </div>
+        </div>
+        <ul class="plan-features">
+          ${plan.features.map(feature => `
+            <li>
+              ${feature.text}
+              <i class="fas ${feature.available ? 'fa-check feature-available' : 'fa-times feature-unavailable'}"></i>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+      
+      plansContainer.appendChild(planCard);
+      
+      // Add event listeners to buttons
+      planCard.querySelector('.edit-btn').addEventListener('click', () => editPlan(planId));
+      planCard.querySelector('.delete-btn').addEventListener('click', () => showDeleteModal(planId));
+    }
+
+    // Function to edit a plan
+    function editPlan(planId) {
+      // Update URL without reloading the page
+      window.history.pushState(null, null, `?id=${planId}`);
+      loadPlanForEditing(planId);
+    }
+
+    // Function to load a plan for editing
+    async function loadPlanForEditing(planId) {
+      try {
+        document.getElementById('formTitle').textContent = "تعديل الباقة";
+        
+        const doc = await db.collection("pricingPlans").doc(planId).get();
+        if (doc.exists) {
+          const plan = doc.data();
+          
+          document.getElementById('planId').value = planId;
+          document.getElementById('planName').value = plan.name;
+          document.getElementById('planPrice').value = plan.price;
+          document.getElementById('planCurrency').value = plan.currency;
+          document.getElementById('planOrder').value = plan.order;
+          document.getElementById('planPopular').checked = plan.popular || false;
+          
+          const container = document.getElementById('featuresContainer');
+          container.innerHTML = '';
+          
+          plan.features.forEach((feature, index) => {
+            const featureId = Date.now() + index;
+            container.insertAdjacentHTML('beforeend', `
+              <div class="feature-item" data-id="${featureId}" role="group" aria-labelledby="feature-${featureId}-label">
+                <div class="form-group">
+                  <label id="feature-${featureId}-label">الميزة ${index + 1}</label>
+                  <input type="text" class="feature-text" value="${feature.text}" required aria-required="true" aria-labelledby="feature-${featureId}-label">
+                </div>
+                <div class="form-group">
+                  <label>
+                    <input type="checkbox" class="feature-available" ${feature.available ? 'checked' : ''} aria-label="متاحة في هذه الباقة">
+                    متاحة في هذه الباقة
+                  </label>
+                </div>
+                <button type="button" class="delete-feature-btn" onclick="removeFeature(${featureId})" aria-label="حذف هذه الميزة">
+                  <i class="fas fa-trash" aria-hidden="true"></i> حذف الميزة
+                </button>
+                <hr aria-hidden="true">
+              </div>
+            `);
+          });
+          
+          // Scroll to form
+          document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
+        } else {
+          alert("الباقة المطلوبة غير موجودة");
+          resetForm();
+        }
+      } catch (error) {
+        console.error("Error loading plan:", error);
+        alert("حدث خطأ أثناء تحميل بيانات الباقة");
+        resetForm();
+      }
+    }
+
+    // Function to reset the form
+    function resetForm() {
+      document.getElementById('formTitle').textContent = "إضافة باقة جديدة";
+      document.getElementById('pricingForm').reset();
+      document.getElementById('featuresContainer').innerHTML = '';
+      document.getElementById('planId').value = '';
+      window.history.pushState(null, null, window.location.pathname);
+    }
+
+    // Function to add new feature
+    function addNewFeature() {
       const container = document.getElementById('featuresContainer');
       const featureId = Date.now();
       
@@ -314,7 +640,7 @@
       
       // Focus on the new feature input
       container.lastElementChild.querySelector('.feature-text').focus();
-    });
+    }
 
     // Function to remove feature
     window.removeFeature = (id) => {
@@ -323,6 +649,40 @@
         feature.remove();
       }
     };
+
+    // Function to show delete confirmation modal
+    function showDeleteModal(planId) {
+      currentPlanToDelete = planId;
+      deleteModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Function to close delete modal
+    function closeDeleteModal() {
+      deleteModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      currentPlanToDelete = null;
+    }
+
+    // Function to confirm plan deletion
+    async function confirmDeletePlan() {
+      if (!currentPlanToDelete) return;
+      
+      try {
+        await db.collection("pricingPlans").doc(currentPlanToDelete).delete();
+        alert("تم حذف الباقة بنجاح");
+        loadPlans();
+        closeDeleteModal();
+        
+        // If we were editing the deleted plan, reset the form
+        if (document.getElementById('planId').value === currentPlanToDelete) {
+          resetForm();
+        }
+      } catch (error) {
+        console.error("Error deleting plan:", error);
+        alert("حدث خطأ أثناء حذف الباقة");
+      }
+    }
 
     // Function to save/update plan
     document.getElementById('pricingForm').addEventListener('submit', async (e) => {
@@ -382,8 +742,10 @@
           alert("تم إضافة الباقة بنجاح");
         }
         
-        // Redirect to pricing list page
-        window.location.href = "pricing.html";
+        // Reset form and reload plans
+        resetForm();
+        loadPlans();
+        
       } catch (error) {
         console.error("Error saving plan:", error);
         alert("حدث خطأ أثناء حفظ الباقة: " + error.message);
@@ -393,59 +755,10 @@
       }
     });
 
-    // Initialize page for editing if ID exists
-    document.addEventListener('DOMContentLoaded', async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const planId = urlParams.get('id');
-      
-      if (planId) {
-        document.getElementById('formTitle').textContent = "تعديل الباقة";
-        
-        try {
-          const doc = await db.collection("pricingPlans").doc(planId).get();
-          if (doc.exists) {
-            const plan = doc.data();
-            
-            document.getElementById('planId').value = planId;
-            document.getElementById('planName').value = plan.name;
-            document.getElementById('planPrice').value = plan.price;
-            document.getElementById('planCurrency').value = plan.currency;
-            document.getElementById('planOrder').value = plan.order;
-            document.getElementById('planPopular').checked = plan.popular || false;
-            
-            const container = document.getElementById('featuresContainer');
-            container.innerHTML = '';
-            
-            plan.features.forEach((feature, index) => {
-              const featureId = Date.now() + index;
-              container.insertAdjacentHTML('beforeend', `
-                <div class="feature-item" data-id="${featureId}" role="group" aria-labelledby="feature-${featureId}-label">
-                  <div class="form-group">
-                    <label id="feature-${featureId}-label">الميزة ${index + 1}</label>
-                    <input type="text" class="feature-text" value="${feature.text}" required aria-required="true" aria-labelledby="feature-${featureId}-label">
-                  </div>
-                  <div class="form-group">
-                    <label>
-                      <input type="checkbox" class="feature-available" ${feature.available ? 'checked' : ''} aria-label="متاحة في هذه الباقة">
-                      متاحة في هذه الباقة
-                    </label>
-                  </div>
-                  <button type="button" class="delete-feature-btn" onclick="removeFeature(${featureId})" aria-label="حذف هذه الميزة">
-                    <i class="fas fa-trash" aria-hidden="true"></i> حذف الميزة
-                  </button>
-                  <hr aria-hidden="true">
-                </div>
-              `);
-            });
-          } else {
-            alert("الباقة المطلوبة غير موجودة");
-            window.location.href = "pricing.html";
-          }
-        } catch (error) {
-          console.error("Error loading plan:", error);
-          alert("حدث خطأ أثناء تحميل بيانات الباقة");
-          window.location.href = "pricing.html";
-        }
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === deleteModal) {
+        closeDeleteModal();
       }
     });
   </script>
