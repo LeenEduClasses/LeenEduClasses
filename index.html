@@ -450,6 +450,27 @@
         font-size: 1.5rem;
       }
     }
+
+
+      .pricing-header .duration {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-top: 5px;
+      }
+
+      .pricing-header .monthly-price {
+        font-size: 0.8rem;
+        color: #3498db;
+      }
+
+      .pricing-features .disabled {
+        opacity: 0.6;
+        text-decoration: line-through;
+      }
+
+
+
+
   </style>
 </head>
 <body>
@@ -892,24 +913,38 @@
 
         pricingContainer.innerHTML = querySnapshot.docs.map(doc => {
           const plan = doc.data();
+          const monthlyPrice = plan.price / plan.duration;
+          
           return `
             <div class="pricing-table ${plan.popular ? 'popular' : ''}" role="article">
               ${plan.popular ? '<div class="popular-tag">الأكثر شيوعاً</div>' : ''}
               <div class="pricing-header">
                 <h3>${plan.name}</h3>
-                <div class="price">${plan.price} <span>${plan.currency}/شهر</span></div>
+                <div class="price">
+                  ${plan.price} <span>${plan.currency}</span>
+                  <div class="duration">لمدة ${plan.duration} أشهر</div>
+                  ${plan.duration > 1 ? 
+                    `<div class="monthly-price">(حوالي ${monthlyPrice.toFixed(2)} ${plan.currency}/شهر)</div>` : 
+                    ''}
+                </div>
               </div>
               <div class="pricing-body">
                 <ul class="pricing-features">
                   ${plan.features.map(f => `
-                    <li class="${f.available ? '' : 'disabled'}">${f.text}</li>
+                    <li class="${f.available ? '' : 'disabled'}">
+                      ${f.text}
+                    </li>
                   `).join('')}
                 </ul>
-                <a href="#" class="cta" aria-label="اشترك في باقة ${plan.name}">اشترك الآن</a>
+                <a href="package_subscription.html?id=${doc.id}" class="cta" aria-label="اشترك في باقة ${plan.name}">
+                  اشترك الآن
+                </a>
               </div>
             </div>
           `;
         }).join('');
+
+
       } catch (error) {
         pricingContainer.innerHTML = `
           <div class="error-msg">

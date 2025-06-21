@@ -314,6 +314,12 @@
         width: 100%;
         justify-content: flex-end;
       }
+
+      #planDuration {
+        width: 100px;
+        display: block;
+      }
+
     }
   </style>
 </head>
@@ -350,7 +356,10 @@
               <option value="€">يورو</option>
             </select>
           </div>
-          
+          <div class="form-group">
+  <label for="planDuration">عدد الأشهر</label>
+  <input type="number" id="planDuration" required aria-required="true" min="1" value="1">
+</div>
           <div class="form-group">
             <label for="planOrder">ترتيب العرض</label>
             <input type="number" id="planOrder" required aria-required="true" min="1">
@@ -511,13 +520,17 @@
       planCard.className = 'plan-card';
       planCard.innerHTML = `
         <div class="plan-header">
-          <div>
+            <div>
             <span class="plan-title">
               ${plan.popular ? '<span class="popular-badge">الأكثر شيوعاً</span>' : ''}
               ${plan.name}
             </span>
-            <span class="plan-price">${plan.price} ${plan.currency}</span>
+            <div style="display: flex; gap: 15px; align-items: center;">
+              <span class="plan-price">${plan.price} ${plan.currency}</span>
+              <span style="color: #7f8c8d;">لمدة ${plan.duration} أشهر</span>
+            </div>
           </div>
+
           <div class="plan-actions">
             <button class="edit-btn" data-id="${planId}">
               <i class="fas fa-edit"></i> تعديل
@@ -559,7 +572,7 @@
         const doc = await db.collection("pricingPlans").doc(planId).get();
         if (doc.exists) {
           const plan = doc.data();
-          
+          document.getElementById('planDuration').value = plan.duration || 1;
           document.getElementById('planId').value = planId;
           document.getElementById('planName').value = plan.name;
           document.getElementById('planPrice').value = plan.price;
@@ -721,6 +734,7 @@
       const planData = {
         name: document.getElementById('planName').value.trim(),
         price: parseFloat(document.getElementById('planPrice').value),
+        duration: parseInt(document.getElementById('planDuration').value),
         currency: document.getElementById('planCurrency').value,
         order: parseInt(document.getElementById('planOrder').value),
         popular: document.getElementById('planPopular').checked,
