@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الفصل الافتراضي - LeenClasses</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-functions.js"></script>
+  <script src="https://meet.jit.si/external_api.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Cairo', sans-serif;
+    }
+    
+    body {
+      background: #1a1a1a;
+      color: white;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* تحسينات شريط العنوان */
+    .classroom-header {
+      background: linear-gradient(135deg, #2c3e50, #1a2b3c);
+      padding: 12px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    
+    .class-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .class-title {
+      font-size: 1.2rem;
+    }
+    
+    .class-info {
+      display: flex;
+      gap: 15px;
+      font-size: 0.9rem;
+      color: #bdc3c7;
+    }
+    
+    .class-time {
+      background: #34495e;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .record-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-right: 15px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+    
+    .record-btn:hover {
+      background: #c0392b;
+    }
+    
+    .recording {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    /* تحسينات المحتوى الرئيسي */
+    .main-content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .video-section {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .video-container {
+      flex: 1;
+      background: #000;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    #zoomContainer {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .video-overlay {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
+    }
+    
+    .screen-share-indicator,
+    .recording-indicator {
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .screen-share-indicator {
+      border-left: 3px solid #3498db;
+    }
+    
+    .recording-indicator {
+      border-left: 3px solid #e74c3c;
+    }
+    
+    .recording-indicator i {
+      color: #e74c3c;
+    }
+    
+    .video-controls {
+      background: #2c3e50;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    
+    .control-btn {
+      background: #34495e;
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+    }
+    
+    .control-btn:hover {
+      background: #3498db;
+    }
+    
+    .control-btn.end-call {
+      background: #e74c3c;
+    }
+    
+    /* تحسينات قسم الأدوات */
+    .tools-section {
+      flex: 1;
+      background: #34495e;
+      display: flex;
+      flex-direction: column;
+      max-width: 350px;
+    }
+    
+    .tools-tabs {
+      display: flex;
+      background: #2c3e50;
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .tab-btn.active {
+      background: #3498db;
+    }
+    
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* تحسينات السبورة التفاعلية */
+    #whiteboard {
+      width: 100%;
+      height: 400px;
+      background: white;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .whiteboard-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #2c3e50;
+      padding: 8px;
+      border-radius: 5px;
+    }
+    
+    .tool-label {
+      font-size: 0.8rem;
+      color: #bdc3c7;
+    }
+    
+    .whiteboard-tool {
+      width: 40px;
+      height: 40px;
+      border-radius: 5px;
+      background: #2c3e50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .whiteboard-tool:hover {
+      background: #3498db;
+    }
+    
+    .whiteboard-tool.active {
+      background: #3498db;
+    }
+    
+    /* تحسينات قائمة الطلاب */
+    .student-filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      background: #2c3e50;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+    
+    .filter-btn.active {
+      background: #3498db;
+    }
+    
+    .search-box {
+      position: relative;
+      margin-bottom: 15px;
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7f8c8d;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      border-radius: 20px;
+      border: none;
+      background: #2c3e50;
+      color: white;
+    }
+    
+    .student-list {
+      list-style: none;
+    }
+    
+    .student-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #2c3e50;
+      transition: all 0.3s;
+    }
+    
+    .student-item.highlight {
+      background: rgba(52, 152, 219, 0.2);
+      border-right: 3px solid #3498db;
+    }
+    
+    .student-item.raised-hand .student-control-btn .fa-hand-paper {
+      color: #f39c12;
+      animation: wave 1s infinite;
+    }
+    
+    .student-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #3498db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      font-weight: bold;
+    }
+    
+    .student-controls {
+      margin-right: auto;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .student-control-btn {
+      background: none;
+      border: none;
+      color: #bdc3c7;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .student-control-btn:hover {
+      color: #3498db;
+    }
+    
+    @keyframes wave {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(15deg); }
+      75% { transform: rotate(-15deg); }
+    }
+    
+    /* تحسينات قسم الملفات */
+    .file-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .file-upload-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    
+    .file-upload-btn:hover {
+      background: #2980b9;
+    }
+    
+    .file-types {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    
+    .type-btn {
+      background: #2c3e50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+    
+    .type-btn.active {
+      background: #3498db;
+    }
+    
+    .file-sort {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+    
+    .file-sort select {
+      background: #2c3e50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    
+    .file-list {
+      list-style: none;
+    }
+    
+    .file-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: #2c3e50;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+    
+    .file-icon-container {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .file-icon {
+      font-size: 1.5rem;
+      color: #3498db;
+    }
+    
+    .file-details {
+      flex: 1;
+    }
+    
+    .file-name {
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+    
+    .file-meta {
+      display: flex;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: #bdc3c7;
+    }
+    
+    .file-actions {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .file-download, .file-share {
+      background: none;
+      border: none;
+      color: #bdc3c7;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .file-download:hover, .file-share:hover {
+      color: #3498db;
+    }
+    
+    /* تحسينات نظام الإشعارات */
+    .notification-center {
+      position: relative;
+      margin-left: 20px;
+    }
+    
+    .notification-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .notification-count {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+    
+    .notification-dropdown {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      width: 300px;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      color: #333;
+      display: none;
+      z-index: 100;
+    }
+    
+    .notification-header {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .notification-header h4 {
+      font-size: 1rem;
+    }
+    
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: #3498db;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .notification-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .notification-item {
+      padding: 10px 15px;
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .notification-item.unread {
+      background: #f8f9fa;
+    }
+    
+    .notification-icon {
+      color: #3498db;
+      font-size: 1.2rem;
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-content small {
+      color: #7f8c8d;
+      font-size: 0.8rem;
+    }
+    
+    .notification-footer {
+      padding: 10px;
+      text-align: center;
+      border-top: 1px solid #eee;
+    }
+    
+    .notification-footer a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    
+    /* تحسينات شاشة التحميل */
+    .loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .loading-spinner {
+      text-align: center;
+      color: white;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #3498db;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    .error-message {
+      text-align: center;
+      color: white;
+    }
+    
+    .error-message i {
+      font-size: 3rem;
+      color: #e74c3c;
+      margin-bottom: 15px;
+    }
+    
+    .error-message button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* تحسينات الوضع الليلي */
+    .dark-mode {
+      background: #121212;
+      color: #e0e0e0;
+    }
+    
+    .dark-mode .tools-section {
+      background: #1e1e1e;
+    }
+    
+    .dark-mode .tab-content {
+      background: #1e1e1e;
+    }
+    
+    .dark-mode .student-list,
+    .dark-mode .file-list {
+      background: #1e1e1e;
+    }
+    
+    /* تحسينات للهواتف */
+    @media (max-width: 992px) {
+      .main-content {
+        flex-direction: column;
+      }
+      
+      .tools-section {
+        max-width: 100%;
+        height: 300px;
+      }
+      
+      .video-controls {
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      .classroom-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .class-info {
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- رأس الصفحة -->
+  <div class="classroom-header">
+    <div class="class-meta">
+      <div class="class-title">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <span>جاري التحميل...</span>
+      </div>
+      <div class="class-info">
+        <span class="class-date"><i class="far fa-calendar-alt"></i> جاري التحميل...</span>
+        <span class="class-topic"><i class="fas fa-book-open"></i> جاري التحميل...</span>
+      </div>
+    </div>
+    <div class="class-time">
+      <i class="fas fa-clock"></i>
+      <span id="timer">00:00:00</span>
+      <button class="record-btn" id="recordBtn" style="display: none;">
+        <i class="fas fa-circle"></i> تسجيل
+      </button>
+      <button class="notification-btn" id="notificationBtn">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count">0</span>
+      </button>
+    </div>
+    
+    <div class="notification-dropdown" id="notificationDropdown">
+      <div class="notification-header">
+        <h4>الإشعارات</h4>
+        <button class="mark-all-read">تعيين الكل كمقروء</button>
+      </div>
+      
+      <div class="notification-list">
+        <!-- سيتم ملؤه ديناميكيًا -->
+      </div>
+      
+      <div class="notification-footer">
+        <a href="#">عرض الكل</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- المحتوى الرئيسي -->
+  <div class="main-content">
+    <!-- قسم الفيديو -->
+    <div class="video-section">
+      <div class="video-container">
+        <div id="zoomContainer">
+          <div class="loading-screen">
+            <div class="loading-spinner">
+              <div class="spinner"></div>
+              <p>جاري تحميل الفيديو...</p>
+            </div>
+          </div>
+        </div>
+        <div class="video-overlay">
+          <div class="screen-share-indicator" id="screenShareIndicator" style="display: none;">
+            <i class="fas fa-desktop"></i>
+            <span>جاري مشاركة الشاشة</span>
+          </div>
+          <div class="recording-indicator" id="recordingIndicator" style="display: none;">
+            <i class="fas fa-circle"></i>
+            <span>جاري التسجيل</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- أدوات التحكم بالفيديو -->
+      <div class="video-controls">
+        <button class="control-btn" title="ميكروفون">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <button class="control-btn" title="كاميرا">
+          <i class="fas fa-video"></i>
+        </button>
+        <button class="control-btn" title="مشاركة الشاشة">
+          <i class="fas fa-desktop"></i>
+        </button>
+        <button class="control-btn" title="إدارة المشاركين">
+          <i class="fas fa-users"></i>
+        </button>
+        <button class="control-btn end-call" title="إنهاء الحصة">
+          <i class="fas fa-phone-slash"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- الأدوات الجانبية -->
+    <div class="tools-section">
+      <!-- ألسنة الأدوات -->
+      <div class="tools-tabs">
+        <div class="tab-btn active" data-tab="whiteboard">
+          <i class="fas fa-chalkboard"></i>
+          <span>السبورة</span>
+        </div>
+        <div class="tab-btn" data-tab="students">
+          <i class="fas fa-users"></i>
+          <span>الطلاب (<span id="studentsCount">0</span>)</span>
+        </div>
+        <div class="tab-btn" data-tab="files">
+          <i class="fas fa-file-alt"></i>
+          <span>الملفات</span>
+        </div>
+      </div>
+      
+      <!-- محتوى السبورة -->
+      <div class="tab-content active" id="whiteboard-tab">
+        <canvas id="whiteboard" width="300" height="300"></canvas>
+        
+        <div class="whiteboard-tools">
+          <div class="tool-group">
+            <span class="tool-label">الأدوات:</span>
+            <button class="whiteboard-tool active" data-tool="pencil" title="قلم">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="whiteboard-tool" data-tool="text" title="نص">
+              <i class="fas fa-font"></i>
+            </button>
+            <button class="whiteboard-tool" data-tool="math" title="رموز رياضية">
+              <i class="fas fa-square-root-alt"></i>
+            </button>
+          </div>
+          
+          <div class="tool-group">
+            <span class="tool-label">الأشكال:</span>
+            <button class="whiteboard-tool" data-tool="line" title="خط">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button class="whiteboard-tool" data-tool="circle" title="دائرة">
+              <i class="fas fa-circle"></i>
+            </button>
+            <button class="whiteboard-tool" data-tool="rectangle" title="مربع">
+              <i class="fas fa-square"></i>
+            </button>
+          </div>
+          
+          <div class="tool-group">
+            <span class="tool-label">اللون:</span>
+            <input type="color" id="colorPicker" value="#000000" title="اختر لونًا">
+            <span class="tool-label">الحجم:</span>
+            <input type="range" id="brushSize" min="1" max="20" value="3" title="حجم الفرشاة">
+          </div>
+          
+          <div class="tool-group">
+            <button class="whiteboard-tool" id="undoBtn" title="تراجع">
+              <i class="fas fa-undo"></i>
+            </button>
+            <button class="whiteboard-tool" id="redoBtn" title="إعادة">
+              <i class="fas fa-redo"></i>
+            </button>
+            <button class="whiteboard-tool" id="clearWhiteboard" title="مسح الكل">
+              <i class="fas fa-trash"></i>
+            </button>
+            <button class="whiteboard-tool" id="saveWhiteboard" title="حفظ الصورة">
+              <i class="fas fa-save"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- محتوى قائمة الطلاب -->
+      <div class="tab-content" id="students-tab">
+        <div class="student-filters">
+          <button class="filter-btn active" data-filter="all">الكل</button>
+          <button class="filter-btn" data-filter="raised">أيدٍ مرفوعة</button>
+          <button class="filter-btn" data-filter="muted">مكتومون</button>
+          <button class="filter-btn" data-filter="absent">غائبون</button>
+        </div>
+        
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="ابحث عن طالب..." id="studentSearch">
+        </div>
+        
+        <ul class="student-list" id="studentList">
+          <!-- سيتم ملؤه ديناميكيًا -->
+        </ul>
+      </div>
+      
+      <!-- محتوى الملفات -->
+      <div class="tab-content" id="files-tab">
+        <div class="file-actions">
+          <button class="file-upload-btn" id="uploadBtn">
+            <i class="fas fa-upload"></i> رفع ملف
+          </button>
+          <input type="file" id="fileInput" style="display: none;">
+          
+          <div class="file-types">
+            <button class="type-btn active" data-type="all">الكل</button>
+            <button class="type-btn" data-type="pdf">PDF</button>
+            <button class="type-btn" data-type="video">فيديو</button>
+            <button class="type-btn" data-type="image">صور</button>
+          </div>
+        </div>
+        
+        <div class="file-sort">
+          <span>ترتيب حسب:</span>
+          <select id="sortFiles">
+            <option value="newest">الأحدث</option>
+            <option value="oldest">الأقدم</option>
+            <option value="name">الاسم</option>
+            <option value="size">الحجم</option>
+          </select>
+        </div>
+        
+        <ul class="file-list" id="fileList">
+          <!-- سيتم ملؤه ديناميكيًا -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- الجافاسكريبت -->
+  <script>
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.appspot.com",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
+    };
+    
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const storage = firebase.storage();
+    const functions = firebase.functions();
+    
+    // تهيئة التطبيق
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // التحقق من المصادقة
+        auth.onAuthStateChanged(async (user) => {
+          if (!user) {
+            window.location.href = 'login.html';
+            return;
+          }
+          
+          // جلب بيانات المستخدم
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (!userDoc.exists) {
+            window.location.href = 'complete-profile.html';
+            return;
+          }
+          
+          const userData = userDoc.data();
+          
+          // التحقق من صلاحية الدخول
+          if (!userData.roles || !userData.roles.includes('teacher', 'admin')) {
+            alert('ليس لديك صلاحية الدخول كمعلم');
+            window.location.href = 'dashboard.html';
+            return;
+          }
+          
+          // تهيئة الفصل الافتراضي
+          await initializeVirtualClass();
+        });
+      } catch (error) {
+        console.error('Initialization error:', error);
+        document.querySelector('.loading-screen').innerHTML = `
+          <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>حدث خطأ أثناء تحميل الصفحة</p>
+            <button onclick="window.location.reload()">إعادة المحاولة</button>
+          </div>
+        `;
+      }
+    });
+    
+    async function initializeVirtualClass() {
+      // جلب معرف الجلسة من URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('sessionId');
+      
+      if (!sessionId) {
+        alert('معرف الجلسة غير موجود');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      
+      const sessionRef = db.collection('class_sessions').doc(sessionId);
+      
+      // تحميل بيانات الجلسة
+      const sessionDoc = await sessionRef.get();
+      
+      if (!sessionDoc.exists) {
+        alert('الجلسة غير موجودة');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      
+      const sessionData = sessionDoc.data();
+      
+      // تحديث واجهة المستخدم ببيانات الجلسة
+      updateUIWithSessionData(sessionData);
+      
+      // تهيئة المكونات
+      initializeWhiteboard(sessionRef);
+      initializeStudentsList(sessionRef);
+      initializeFileSharing(sessionRef);
+      initializeVideoConference(sessionData);
+      setupRealTimeUpdates(sessionRef);
+      
+      // بدء المؤقت
+      startSessionTimer(sessionData.startTime.toDate());
+    }
+    
+    function updateUIWithSessionData(sessionData) {
+      document.querySelector('.class-title span').textContent = 
+        `${sessionData.subject} - ${sessionData.className}`;
+      
+      document.querySelector('.class-date').innerHTML = 
+        `<i class="far fa-calendar-alt"></i> ${formatDate(sessionData.startTime.toDate())}`;
+      
+      document.querySelector('.class-topic').innerHTML = 
+        `<i class="fas fa-book-open"></i> ${sessionData.topic || 'لا يوجد موضوع محدد'}`;
+      
+      // تحديث عدد الطلاب
+      updateStudentsCount(sessionData.participants?.length || 0);
+    }
+    
+    function formatDate(date) {
+      return date.toLocaleDateString('ar-EG', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+    
+    function updateStudentsCount(count) {
+      document.getElementById('studentsCount').textContent = count;
+    }
+    
+    // إدارة السبورة التفاعلية
+    let canvas;
+    let undoStack = [];
+    let redoStack = [];
+    let currentSessionRef;
+    
+    async function initializeWhiteboard(sessionRef) {
+      currentSessionRef = sessionRef;
+      
+      canvas = new fabric.Canvas('whiteboard', {
+        isDrawingMode: true,
+        backgroundColor: 'white',
+        width: document.querySelector('#whiteboard-tab').clientWidth - 30,
+        height: 400
+      });
+      
+      // دعم اللغة العربية في النصوص
+      fabric.Object.prototype.rtl = true;
+      fabric.Textbox.prototype.rtl = true;
+      
+      // تحميل حالة السبورة السابقة
+      const whiteboardDoc = await sessionRef.collection('whiteboard').doc('current').get();
+      if (whiteboardDoc.exists) {
+        canvas.loadFromJSON(whiteboardDoc.data().state, () => {
+          canvas.renderAll();
+        });
+      }
+      
+      // تحديث حجم السبورة عند تغيير حجم النافذة
+      window.addEventListener('resize', () => {
+        canvas.setDimensions({
+          width: document.querySelector('#whiteboard-tab').clientWidth - 30,
+          height: 400
+        });
+      });
+      
+      // إعداد أدوات السبورة
+      setupWhiteboardTools();
+      
+      // الحفظ التلقائي كل 30 ثانية
+      setInterval(() => saveWhiteboardState(), 30000);
+    }
+    
+    function setupWhiteboardTools() {
+      // أدوات السبورة
+      const tools = {
+        pencil: () => {
+          canvas.isDrawingMode = true;
+          canvas.defaultCursor = 'crosshair';
+          setActiveTool('pencil');
+        },
+        text: () => {
+          canvas.isDrawingMode = false;
+          const text = new fabric.Textbox('اكتب هنا', {
+            left: 100,
+            top: 100,
+            fontFamily: 'Cairo',
+            fontSize: 20,
+            fill: document.getElementById('colorPicker').value,
+            width: 200,
+            textAlign: 'right',
+            rtl: true
+          });
+          canvas.add(text).setActiveObject(text);
+          text.enterEditing();
+          text.selectAll();
+          setActiveTool('text');
+        },
+        line: () => {
+          canvas.isDrawingMode = false;
+          const line = new fabric.Line([50, 50, 200, 200], {
+            stroke: document.getElementById('colorPicker').value,
+            strokeWidth: parseInt(document.getElementById('brushSize').value),
+            selectable: true
+          });
+          canvas.add(line);
+          setActiveTool('line');
+        },
+        circle: () => {
+          canvas.isDrawingMode = false;
+          const circle = new fabric.Circle({
+            radius: 50,
+            left: 100,
+            top: 100,
+            fill: 'transparent',
+            stroke: document.getElementById('colorPicker').value,
+            strokeWidth: parseInt(document.getElementById('brushSize').value),
+            selectable: true
+          });
+          canvas.add(circle);
+          setActiveTool('circle');
+        },
+        rectangle: () => {
+          canvas.isDrawingMode = false;
+          const rect = new fabric.Rect({
+            width: 100,
+            height: 100,
+            left: 100,
+            top: 100,
+            fill: 'transparent',
+            stroke: document.getElementById('colorPicker').value,
+            strokeWidth: parseInt(document.getElementById('brushSize').value),
+            selectable: true
+          });
+          canvas.add(rect);
+          setActiveTool('rectangle');
+        },
+        math: () => {
+          canvas.isDrawingMode = false;
+          const text = new fabric.Textbox('س + ص = ٥', {
+            left: 100,
+            top: 100,
+            fontFamily: 'Cairo',
+            fontSize: 24,
+            fill: document.getElementById('colorPicker').value,
+            width: 200,
+            textAlign: 'right',
+            rtl: true
+          });
+          canvas.add(text).setActiveObject(text);
+          text.enterEditing();
+          text.selectAll();
+          setActiveTool('math');
+        }
+      };
+      
+      function setActiveTool(tool) {
+        document.querySelectorAll('[data-tool]').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+      }
+      
+      // تغيير أدوات السبورة
+      document.querySelectorAll('[data-tool]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const tool = this.getAttribute('data-tool');
+          tools[tool]();
+        });
+      });
+      
+      // تغيير لون الرسم
+      document.getElementById('colorPicker').addEventListener('change', function() {
+        canvas.freeDrawingBrush.color = this.value;
+      });
+      
+      // تغيير حجم الفرشاة
+      document.getElementById('brushSize').addEventListener('input', function() {
+        canvas.freeDrawingBrush.width = parseInt(this.value);
+      });
+      
+      // مسح السبورة
+      document.getElementById('clearWhiteboard').addEventListener('click', function() {
+        if (confirm('هل تريد مسح السبورة بالكامل؟')) {
+          canvas.clear();
+          canvas.backgroundColor = 'white';
+          canvas.renderAll();
+          saveWhiteboardState();
+        }
+      });
+      
+      // حفظ السبورة كصورة
+      document.getElementById('saveWhiteboard').addEventListener('click', function() {
+        const link = document.createElement('a');
+        link.download = 'سبورة-' + new Date().toLocaleDateString('ar-EG') + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+      
+      // تتبع التغييرات للتراجع والإعادة
+      canvas.on('object:added', () => {
+        undoStack.push(JSON.stringify(canvas.toJSON()));
+        redoStack = [];
+      });
+      
+      canvas.on('object:modified', () => {
+        saveWhiteboardState();
+      });
+      
+      // تراجع وإعادة
+      document.getElementById('undoBtn').addEventListener('click', () => {
+        if (undoStack.length > 1) {
+          redoStack.push(undoStack.pop());
+          canvas.loadFromJSON(JSON.parse(undoStack[undoStack.length - 1]), () => {
+            canvas.renderAll();
+          });
+        }
+      });
+      
+      document.getElementById('redoBtn').addEventListener('click', () => {
+        if (redoStack.length > 0) {
+          const state = redoStack.pop();
+          undoStack.push(state);
+          canvas.loadFromJSON(JSON.parse(state), () => {
+            canvas.renderAll();
+          });
+        }
+      });
+    }
+    
+    async function saveWhiteboardState() {
+      try {
+        await currentSessionRef.collection('whiteboard').doc('current').set({
+          state: canvas.toJSON(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (error) {
+        console.error('Error saving whiteboard:', error);
+      }
+    }
+    
+    // إدارة قائمة الطلاب
+    async function initializeStudentsList(sessionRef) {
+      // الاستماع للتغييرات في الحضور
+      sessionRef.collection('attendance').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          const studentId = change.doc.id;
+          const isPresent = change.doc.data().present;
+          
+          updateStudentPresenceUI(studentId, isPresent);
+        });
+      });
+      
+      // الاستماع لطلبات المشاركة
+      sessionRef.collection('raised_hands').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          const studentId = change.doc.id;
+          
+          if (change.type === 'added') {
+            showRaisedHand(studentId);
+          } else if (change.type === 'removed') {
+            hideRaisedHand(studentId);
+          }
+        });
+      });
+      
+      // تحميل قائمة الطلاب الأساسية
+      const sessionDoc = await sessionRef.get();
+      const classId = sessionDoc.data().classId;
+      
+      const studentsSnapshot = await db.collection('users')
+        .where('roles', 'array-contains', 'student')
+        .where('classId', '==', classId)
+        .get();
+      
+      renderStudentsList(studentsSnapshot.docs);
+      
+      // البحث عن الطلاب
+      document.getElementById('studentSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        document.querySelectorAll('.student-item').forEach(item => {
+          const name = item.querySelector('.student-name').textContent.toLowerCase();
+          item.style.display = name.includes(searchTerm) ? 'flex' : 'none';
+        });
+      });
+      
+      // تصفية الطلاب
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelector('.filter-btn.active').classList.remove('active');
+          this.classList.add('active');
+          
+          const filter = this.getAttribute('data-filter');
+          document.querySelectorAll('.student-item').forEach(item => {
+            item.style.display = 'flex';
+            
+            if (filter === 'raised' && !item.classList.contains('raised-hand')) {
+              item.style.display = 'none';
+            } else if (filter === 'muted' && !item.querySelector('.fa-microphone-slash')) {
+              item.style.display = 'none';
+            } else if (filter === 'absent' && !item.classList.contains('absent')) {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+    }
+    
+    function renderStudentsList(studentsDocs) {
+      const studentsList = document.getElementById('studentList');
+      studentsList.innerHTML = '';
+      
+      studentsDocs.forEach(doc => {
+        const student = doc.data();
+        const studentItem = document.createElement('li');
+        studentItem.className = 'student-item';
+        studentItem.dataset.id = doc.id;
+        
+        studentItem.innerHTML = `
+          <div class="student-avatar">${student.name.charAt(0)}</div>
+          <div class="student-name">${student.name}</div>
+          <div class="student-controls">
+            <button class="student-control-btn mute-btn" title="كتم">
+              <i class="fas fa-microphone-slash"></i>
+            </button>
+            <button class="student-control-btn video-btn" title="إيقاف الكاميرا">
+              <i class="fas fa-video-slash"></i>
+            </button>
+            <button class="student-control-btn hand-btn" title="رفع اليد">
+              <i class="fas fa-hand-paper"></i>
+            </button>
+          </div>
+        `;
+        
+        studentsList.appendChild(studentItem);
+        
+        // إضافة مستمعي الأحداث للأزرار
+        studentItem.querySelector('.mute-btn').addEventListener('click', () => toggleMuteStudent(doc.id));
+        studentItem.querySelector('.video-btn').addEventListener('click', () => toggleVideoStudent(doc.id));
+        studentItem.querySelector('.hand-btn').addEventListener('click', () => callOnStudent(doc.id));
+      });
+    }
+    
+    function updateStudentPresenceUI(studentId, isPresent) {
+      const studentItem = document.querySelector(`.student-item[data-id="${studentId}"]`);
+      if (studentItem) {
+        studentItem.classList.toggle('absent', !isPresent);
+      }
+    }
+    
+    function showRaisedHand(studentId) {
+      const studentItem = document.querySelector(`.student-item[data-id="${studentId}"]`);
+      if (studentItem) {
+        studentItem.classList.add('raised-hand');
+        
+        // إشعار للمعلم
+        showNotification(`${studentItem.querySelector('.student-name').textContent} يريد المشاركة`);
+      }
+    }
+    
+    function hideRaisedHand(studentId) {
+      const studentItem = document.querySelector(`.student-item[data-id="${studentId}"]`);
+      if (studentItem) {
+        studentItem.classList.remove('raised-hand');
+      }
+    }
+    
+    async function toggleMuteStudent(studentId) {
+      try {
+        const toggleMute = functions.httpsCallable('toggleMuteStudent');
+        await toggleMute({ 
+          studentId: studentId, 
+          sessionId: getCurrentSessionId() 
+        });
+      } catch (error) {
+        console.error('Error toggling mute:', error);
+        alert('حدث خطأ أثناء تعديل حالة الميكروفون');
+      }
+    }
+    
+    async function toggleVideoStudent(studentId) {
+      try {
+        const toggleVideo = functions.httpsCallable('toggleVideoStudent');
+        await toggleVideo({ 
+          studentId: studentId, 
+          sessionId: getCurrentSessionId() 
+        });
+      } catch (error) {
+        console.error('Error toggling video:', error);
+        alert('حدث خطأ أثناء تعديل حالة الكاميرا');
+      }
+    }
+    
+    async function callOnStudent(studentId) {
+      try {
+        const callStudent = functions.httpsCallable('callOnStudent');
+        await callStudent({ 
+          studentId: studentId, 
+          sessionId: getCurrentSessionId() 
+        });
+      } catch (error) {
+        console.error('Error calling student:', error);
+        alert('حدث خطأ أثناء استدعاء الطالب');
+      }
+    }
+    
+    // إدارة الملفات
+    async function initializeFileSharing(sessionRef) {
+      // تحميل الملفات الحالية
+      loadSessionFiles(sessionRef);
+      
+      // إعداد رفع الملفات
+      document.getElementById('uploadBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+      });
+      
+      document.getElementById('fileInput').addEventListener('change', async (e) => {
+        if (e.target.files.length > 0) {
+          await uploadFile(e.target.files[0], sessionRef);
+          e.target.value = ''; // مسح قيمة الإدخال
+        }
+      });
+      
+      // تصفية الملفات حسب النوع
+      document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelector('.type-btn.active').classList.remove('active');
+          this.classList.add('active');
+          
+          const type = this.getAttribute('data-type');
+          document.querySelectorAll('.file-item').forEach(item => {
+            item.style.display = type === 'all' || item.getAttribute('data-type') === type ? 'flex' : 'none';
+          });
+        });
+      });
+      
+      // ترتيب الملفات
+      document.getElementById('sortFiles').addEventListener('change', function() {
+        const sortBy = this.value;
+        const fileItems = Array.from(document.querySelectorAll('.file-item'));
+        
+        fileItems.sort((a, b) => {
+          if (sortBy === 'newest') {
+            return new Date(b.getAttribute('data-date')) - new Date(a.getAttribute('data-date'));
+          } else if (sortBy === 'oldest') {
+            return new Date(a.getAttribute('data-date')) - new Date(b.getAttribute('data-date'));
+          } else if (sortBy === 'name') {
+            return a.querySelector('.file-name').textContent.localeCompare(b.querySelector('.file-name').textContent);
+          } else if (sortBy === 'size') {
+            return parseFloat(b.getAttribute('data-size')) - parseFloat(a.getAttribute('data-size'));
+          }
+          return 0;
+        });
+        
+        const fileList = document.getElementById('fileList');
+        fileList.innerHTML = '';
+        fileItems.forEach(item => fileList.appendChild(item));
+      });
+    }
+    
+    async function loadSessionFiles(sessionRef) {
+      try {
+        const filesSnapshot = await sessionRef.collection('files')
+          .orderBy('uploadedAt', 'desc')
+          .get();
+        
+        renderFilesList(filesSnapshot.docs);
+      } catch (error) {
+        console.error('Error loading files:', error);
+        alert('حدث خطأ أثناء تحميل الملفات');
+      }
+    }
+    
+    function renderFilesList(filesDocs) {
+      const filesList = document.getElementById('fileList');
+      filesList.innerHTML = '';
+      
+      filesDocs.forEach(doc => {
+        const file = doc.data();
+        const fileItem = document.createElement('li');
+        fileItem.className = 'file-item';
+        fileItem.dataset.type = file.type;
+        fileItem.dataset.date = file.uploadedAt.toDate().toISOString();
+        fileItem.dataset.size = file.size;
+        
+        fileItem.innerHTML = `
+          <div class="file-icon-container">
+            <i class="fas ${getFileIcon(file.type)} file-icon"></i>
+          </div>
+          <div class="file-details">
+            <div class="file-name">${file.name}</div>
+            <div class="file-meta">
+              <span class="file-size">${file.size} MB</span>
+              <span class="file-date">${formatDate(file.uploadedAt.toDate())}</span>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="file-download" title="تحميل" data-url="${file.url}">
+              <i class="fas fa-download"></i>
+            </button>
+            <button class="file-share" title="مشاركة" data-id="${doc.id}">
+              <i class="fas fa-share-alt"></i>
+            </button>
+          </div>
+        `;
+        
+        filesList.appendChild(fileItem);
+        
+        // إضافة مستمعي الأحداث للأزرار
+        fileItem.querySelector('.file-download').addEventListener('click', () => {
+          window.open(fileItem.querySelector('.file-download').dataset.url, '_blank');
+        });
+        
+        fileItem.querySelector('.file-share').addEventListener('click', () => {
+          shareFile(doc.id);
+        });
+      });
+    }
+    
+    function getFileIcon(type) {
+      const icons = {
+        'pdf': 'fa-file-pdf',
+        'video': 'fa-file-video',
+        'image': 'fa-file-image',
+        'audio': 'fa-file-audio',
+        'word': 'fa-file-word',
+        'excel': 'fa-file-excel',
+        'powerpoint': 'fa-file-powerpoint',
+        'zip': 'fa-file-archive',
+        'default': 'fa-file-alt'
+      };
+      
+      return icons[type] || icons.default;
+    }
+    
+    async function uploadFile(file, sessionRef) {
+      try {
+        // رفع الملف إلى Storage
+        const storageRef = storage.ref(`class_files/${sessionRef.id}/${Date.now()}_${file.name}`);
+        const uploadTask = storageRef.put(file);
+        
+        // عرض شريط التقدم
+        showUploadProgress(file.name);
+        
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            updateUploadProgress(file.name, progress);
+          },
+          (error) => {
+            console.error('Upload error:', error);
+            hideUploadProgress(file.name);
+            alert('حدث خطأ أثناء رفع الملف');
+          },
+          async () => {
+            // الرفع اكتمل بنجاح
+            hideUploadProgress(file.name);
+            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+            
+            // حفظ بيانات الملف في Firestore
+            await sessionRef.collection('files').add({
+              name: file.name,
+              type: getFileType(file.name),
+              size: (file.size / (1024 * 1024)).toFixed(2),
+              url: downloadURL,
+              uploadedBy: auth.currentUser.uid,
+              uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            showNotification(`تم رفع الملف: ${file.name}`);
+          }
+        );
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('حدث خطأ أثناء رفع الملف');
+      }
+    }
+    
+    function getFileType(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      
+      if (['pdf'].includes(ext)) return 'pdf';
+      if (['mp4', 'mov', 'avi'].includes(ext)) return 'video';
+      if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) return 'image';
+      if (['doc', 'docx'].includes(ext)) return 'word';
+      if (['xls', 'xlsx'].includes(ext)) return 'excel';
+      if (['ppt', 'pptx'].includes(ext)) return 'powerpoint';
+      if (['zip', 'rar'].includes(ext)) return 'zip';
+      return 'other';
+    }
+    
+    async function shareFile(fileId) {
+      try {
+        const doc = await currentSessionRef.collection('files').doc(fileId).get();
+        if (doc.exists) {
+          const file = doc.data();
+          const shareUrl = `${window.location.origin}/file_share.html?id=${fileId}`;
+          
+          if (navigator.share) {
+            await navigator.share({
+              title: file.name,
+              text: 'ملف مشارك من حصة LeenClasses',
+              url: shareUrl
+            });
+          } else {
+            prompt('انسخ الرابط التالي لمشاركة الملف:', shareUrl);
+          }
+        }
+      } catch (error) {
+        console.error('Error sharing file:', error);
+      }
+    }
+    
+    // تكامل الفيديو (Jitsi)
+    let jitsiApi;
+    
+    async function initializeVideoConference(sessionData) {
+      try {
+        // إنشاء معرف فريد للغرفة
+        const roomName = `LeenClasses-${sessionData.id}-${auth.currentUser.uid}`;
+        
+        // تهيئة واجهة Jitsi
+        const domain = 'meet.jit.si';
+        const options = {
+          roomName: roomName,
+          width: '100%',
+          height: '100%',
+          parentNode: document.querySelector('#zoomContainer'),
+          userInfo: {
+            displayName: auth.currentUser.displayName || 'معلم',
+            email: auth.currentUser.email
+          },
+          configOverwrite: {
+            startWithAudioMuted: false,
+            startWithVideoMuted: false,
+            enableWelcomePage: false,
+            prejoinPageEnabled: false
+          },
+          interfaceConfigOverwrite: {
+            DEFAULT_LOGO_URL: 'https://your-school-logo.png',
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false,
+            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+            TOOLBAR_BUTTONS: [
+              'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
+              'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+              'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
+              'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+              'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone'
+            ],
+          }
+        };
+        
+        jitsiApi = new JitsiMeetExternalAPI(domain, options);
+        
+        // إعداد معالجات الأحداث
+        jitsiApi.addListener('participantRoleChanged', (data) => {
+          if (data.role === 'moderator') {
+            document.getElementById('recordBtn').style.display = 'block';
+          }
+        });
+        
+        jitsiApi.addListener('screenSharingStatusChanged', (data) => {
+          document.getElementById('screenShareIndicator').style.display = 
+            data.on ? 'flex' : 'none';
+        });
+        
+        jitsiApi.addListener('participantJoined', (data) => {
+          // تحديث قائمة الحضور عند انضمام طالب
+          updateAttendance(data.id, true);
+        });
+        
+        jitsiApi.addListener('participantLeft', (data) => {
+          // تحديث قائمة الحضور عند مغادرة طالب
+          updateAttendance(data.id, false);
+        });
+        
+        // ربط أزرار التحكم
+        document.querySelector('[title="ميكروفون"]').addEventListener('click', () => {
+          jitsiApi.executeCommand('toggleAudio');
+        });
+        
+        document.querySelector('[title="كاميرا"]').addEventListener('click', () => {
+          jitsiApi.executeCommand('toggleVideo');
+        });
+        
+        document.querySelector('[title="مشاركة الشاشة"]').addEventListener('click', () => {
+          jitsiApi.executeCommand('toggleShareScreen');
+        });
+        
+        document.getElementById('recordBtn').addEventListener('click', () => {
+          jitsiApi.executeCommand('toggleRecording', {
+            mode: 'file'
+          });
+          document.getElementById('recordingIndicator').style.display = 
+            document.getElementById('recordingIndicator').style.display === 'flex' ? 'none' : 'flex';
+        });
+        
+        document.querySelector('.end-call').addEventListener('click', () => {
+          if (confirm('هل أنت متأكد أنك تريد إنهاء الحصة؟')) {
+            jitsiApi.dispose();
+            window.location.href = 'dashboard.html';
+          }
+        });
+        
+        // إخفاء شاشة التحميل
+        document.querySelector('.loading-screen').style.display = 'none';
+        
+      } catch (error) {
+        console.error('Error initializing video:', error);
+        document.querySelector('.loading-screen').innerHTML = `
+          <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>حدث خطأ أثناء تحميل الفيديو</p>
+            <button onclick="window.location.reload()">إعادة المحاولة</button>
+          </div>
+        `;
+      }
+    }
+    
+    async function updateAttendance(userId, isPresent) {
+      try {
+        await currentSessionRef.collection('attendance').doc(userId).set({
+          present: isPresent,
+          lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      } catch (error) {
+        console.error('Error updating attendance:', error);
+      }
+    }
+    
+    // التحديثات في الوقت الحقيقي
+    function setupRealTimeUpdates(sessionRef) {
+      // تحديث حالة الجلسة
+      sessionRef.onSnapshot(doc => {
+        const sessionData = doc.data();
+        updateUIWithSessionData(sessionData);
+      });
+      
+      // الاستماع للإشعارات الجديدة
+      sessionRef.collection('notifications')
+        .orderBy('createdAt', 'desc')
+        .limit(5)
+        .onSnapshot(snapshot => {
+          updateNotificationsUI(snapshot.docs);
+        });
+    }
+    
+    function updateNotificationsUI(notificationsDocs) {
+      const notificationsList = document.querySelector('.notification-list');
+      notificationsList.innerHTML = '';
+      
+      let unreadCount = 0;
+      
+      notificationsDocs.forEach(doc => {
+        const notification = doc.data();
+        const notificationItem = document.createElement('div');
+        notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+        
+        if (!notification.read) unreadCount++;
+        
+        notificationItem.innerHTML = `
+          <div class="notification-icon">
+            <i class="fas ${getNotificationIcon(notification.type)}"></i>
+          </div>
+          <div class="notification-content">
+            <p>${notification.message}</p>
+            <small>${formatTime(notification.createdAt.toDate())}</small>
+          </div>
+        `;
+        
+        notificationsList.appendChild(notificationItem);
+        
+        // عند النقر على الإشعار
+        notificationItem.addEventListener('click', async () => {
+          if (!notification.read) {
+            await doc.ref.update({ read: true });
+          }
+          handleNotificationClick(notification);
+        });
+      });
+      
+      // تحديث عداد الإشعارات غير المقروءة
+      document.querySelector('.notification-count').textContent = unreadCount;
+    }
+    
+    function getNotificationIcon(type) {
+      const icons = {
+        'hand_raised': 'fa-hand-paper',
+        'file_uploaded': 'fa-file-upload',
+        'message': 'fa-comment-alt',
+        'join': 'fa-user-plus',
+        'leave': 'fa-user-minus',
+        'default': 'fa-bell'
+      };
+      
+      return icons[type] || icons.default;
+    }
+    
+    function formatTime(date) {
+      return date.toLocaleTimeString('ar-EG', {
+        hour: 'numeric',
+        minute: 'numeric'
+      });
+    }
+    
+    function handleNotificationClick(notification) {
+      // يمكنك إضافة معالجات محددة لكل نوع إشعار
+      switch(notification.type) {
+        case 'hand_raised':
+          // التركيز على الطالب الذي رفع يده
+          const studentItem = document.querySelector(`.student-item[data-id="${notification.userId}"]`);
+          if (studentItem) {
+            document.querySelector('[data-tab="students"]').click();
+            studentItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            studentItem.classList.add('highlight');
+            setTimeout(() => studentItem.classList.remove('highlight'), 3000);
+          }
+          break;
+        case 'file_uploaded':
+          // التركيز على قسم الملفات
+          document.querySelector('[data-tab="files"]').click();
+          break;
+        default:
+          // لا شيء
+      }
+    }
+    
+    // إدارة الإشعارات
+    document.getElementById('notificationBtn').addEventListener('click', function() {
+      const dropdown = document.getElementById('notificationDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+    
+    document.querySelector('.mark-all-read').addEventListener('click', async function() {
+      try {
+        const notificationsSnapshot = await currentSessionRef.collection('notifications')
+          .where('read', '==', false)
+          .get();
+        
+        const batch = db.batch();
+        notificationsSnapshot.docs.forEach(doc => {
+          batch.update(doc.ref, { read: true });
+        });
+        
+        await batch.commit();
+      } catch (error) {
+        console.error('Error marking all as read:', error);
+      }
+    });
+    
+    // إغلاق القائمة المنسدلة عند النقر خارجها
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.notification-center')) {
+        document.getElementById('notificationDropdown').style.display = 'none';
+      }
+    });
+    
+    // وظائف مساعدة
+    function getCurrentSessionId() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('sessionId');
+    }
+    
+    function showNotification(message) {
+      if (Notification.permission === 'granted') {
+        new Notification('إشعار جديد', { body: message });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            new Notification('إشعار جديد', { body: message });
+          }
+        });
+      }
+      
+      // عرض إشعار داخلي
+      const notificationElement = document.createElement('div');
+      notificationElement.className = 'in-app-notification';
+      notificationElement.textContent = message;
+      document.body.appendChild(notificationElement);
+      
+      setTimeout(() => {
+        notificationElement.remove();
+      }, 5000);
+    }
+    
+    function startSessionTimer(startTime) {
+      const startTimestamp = startTime.getTime();
+      
+      setInterval(() => {
+        const now = new Date().getTime();
+        const elapsed = now - startTimestamp;
+        
+        const hours = Math.floor(elapsed / (1000 * 60 * 60));
+        const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+        
+        document.getElementById('timer').textContent = 
+          `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+    
+    // تبديل الألسنة
+    document.querySelectorAll('.tab-btn').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelector('.tab-btn.active').classList.remove('active');
+        this.classList.add('active');
+        
+        document.querySelector('.tab-content.active').classList.remove('active');
+        document.getElementById(this.getAttribute('data-tab') + '-tab').classList.add('active');
+        
+        // تحديث حجم السبورة عند التبديل
+        if (this.getAttribute('data-tab') === 'whiteboard') {
+          canvas.setDimensions({
+            width: document.querySelector('#whiteboard-tab').clientWidth - 30,
+            height: 400
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

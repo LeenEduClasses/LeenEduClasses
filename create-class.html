@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء فصل جديد - LeenClasses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --success-color: #2ecc71;
+      --warning-color: #f39c12;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --border-color: #ddd;
+      --shadow-color: rgba(0,0,0,0.1);
+    }
+    
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      font-family: "Cairo", sans-serif; 
+    }
+    
+    body { 
+      background-color: #f5f7fa; 
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .header h1 {
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: var(--secondary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px var(--shadow-color);
+    }
+    
+    .btn-danger {
+      background: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+    
+    .btn-success {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #27ae60;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .btn-outline:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+    
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px var(--shadow-color);
+      margin-bottom: 30px;
+    }
+    
+    .form-title {
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--secondary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    .form-control.is-invalid {
+      border-color: var(--accent-color);
+    }
+    
+    .invalid-feedback {
+      color: var(--accent-color);
+      font-size: 0.85rem;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    .form-control.is-invalid + .invalid-feedback {
+      display: block;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .form-col {
+      flex: 1;
+    }
+    
+    .schedule-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      border-left: 3px solid var(--secondary-color);
+      position: relative;
+    }
+    
+    .schedule-item.conflict {
+      border-left-color: var(--accent-color);
+      background: rgba(231, 76, 60, 0.05);
+    }
+    
+    .schedule-item .conflict-warning {
+      color: var(--accent-color);
+      font-size: 0.8rem;
+      display: none;
+      margin-top: 5px;
+    }
+    
+    .schedule-item.conflict .conflict-warning {
+      display: block;
+    }
+    
+    .teacher-select {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      transition: all 0.2s;
+    }
+    
+    .teacher-select:hover {
+      background: rgba(52, 152, 219, 0.1);
+    }
+    
+    .teacher-select img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .teacher-select label {
+      cursor: pointer;
+      flex-grow: 1;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .nav-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+    
+    .nav-tabs .tab-btn {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-weight: 600;
+      color: var(--primary-color);
+      position: relative;
+    }
+    
+    .nav-tabs .tab-btn.active {
+      color: var(--secondary-color);
+    }
+    
+    .nav-tabs .tab-btn.active:after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--secondary-color);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--border-color);
+      margin-bottom: 15px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-primary {
+      background: var(--secondary-color);
+      color: white;
+    }
+    
+    .badge-warning {
+      background: var(--warning-color);
+      color: white;
+    }
+    
+    .badge-success {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    .badge-danger {
+      background: var(--accent-color);
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .nav-tabs {
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+      
+      .nav-tabs .tab-btn {
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-book-open"></i> <span id="pageTitle">إنشاء فصل جديد</span></h1>
+      <div>
+        <a href="classes.html" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> رجوع إلى قائمة الفصول
+        </a>
+      </div>
+    </div>
+    
+    <div class="form-container">
+      <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="basic-info">
+          <i class="fas fa-info-circle"></i> المعلومات الأساسية
+        </button>
+        <button class="tab-btn" data-tab="schedule">
+          <i class="fas fa-calendar-alt"></i> جدول الحصص
+        </button>
+        <button class="tab-btn" data-tab="teacher">
+          <i class="fas fa-chalkboard-teacher"></i> المدرس المسؤول
+        </button>
+      </div>
+      
+      <form id="classForm">
+        <input type="hidden" id="classId">
+        
+        <div id="basic-info" class="tab-content active">
+          <h2 class="form-title"><i class="fas fa-info-circle"></i> بيانات الفصل الأساسية</h2>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="className">اسم الفصل <span class="required">*</span></label>
+                <input type="text" id="className" class="form-control" required>
+                <div class="invalid-feedback">الرجاء إدخال اسم الفصل</div>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label for="classSubject">المادة الدراسية <span class="required">*</span></label>
+                <select id="classSubject" class="form-control" required>
+                  <option value="">اختر المادة</option>
+                  <option value="math">الرياضيات</option>
+                  <option value="english">اللغة الإنجليزية</option>
+                  <option value="chemistry">الكيمياء</option>
+                  <option value="arabic">اللغة العربية</option>
+                  <option value="physics">الفيزياء</option>
+                  <option value="biology">الأحياء</option>
+                  <option value="history">التاريخ</option>
+                  <option value="geography">الجغرافيا</option>
+                </select>
+                <div class="invalid-feedback">الرجاء اختيار المادة الدراسية</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="classGrade">الصف الدراسي <span class="required">*</span></label>
+                <select id="classGrade" class="form-control" required>
+                  <option value="">اختر الصف</option>
+                  <option value="grade1">الصف الأول الإعدادي</option>
+                  <option value="grade2">الصف الثاني الإعدادي</option>
+                  <option value="grade3">الصف الثالث الإعدادي</option>
+                  <option value="grade4">الصف الأول الثانوي</option>
+                  <option value="grade5">الصف الثاني الثانوي</option>
+                  <option value="grade6">الصف الثالث الثانوي</option>
+                </select>
+                <div class="invalid-feedback">الرجاء اختيار الصف الدراسي</div>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label for="classCapacity">السعة القصوى للطلاب <span class="required">*</span></label>
+                <input type="number" id="classCapacity" class="form-control" min="1" max="50" value="20" required>
+                <div class="invalid-feedback">الرجاء إدخال سعة صحيحة بين 1 و 50</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="classDescription">وصف الفصل</label>
+            <textarea id="classDescription" class="form-control" rows="3" maxlength="500"></textarea>
+            <small class="text-muted">حد أقصى 500 حرف</small>
+          </div>
+          
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="isActive"> الفصل نشط وجاهز للاستخدام
+            </label>
+          </div>
+        </div>
+        
+        <div id="schedule" class="tab-content">
+          <h2 class="form-title"><i class="fas fa-calendar-alt"></i> جدول الحصص</h2>
+          
+          <div id="scheduleContainer">
+            <!-- سيتم إضافة جدول الحصص هنا -->
+            <div class="empty-state">
+              <i class="fas fa-calendar-times"></i>
+              <p>لا يوجد جدول حصص مضاف حتى الآن</p>
+            </div>
+          </div>
+          
+          <button type="button" id="addSchedule" class="btn btn-success">
+            <i class="fas fa-plus"></i> إضافة حصة جديدة
+          </button>
+        </div>
+        
+        <div id="teacher" class="tab-content">
+          <h2 class="form-title"><i class="fas fa-chalkboard-teacher"></i> المدرس المسؤول</h2>
+          
+          <div class="form-group">
+            <label>اختر المدرس المسؤول عن الفصل <span class="required">*</span></label>
+            <div id="teachersList">
+              <!-- سيتم عرض قائمة المدرسين هنا -->
+              <div class="loading-container">
+                <div class="loading"></div>
+                <span>جاري تحميل المدرسين...</span>
+              </div>
+            </div>
+            <div class="invalid-feedback" id="teacherError" style="display: none;">الرجاء اختيار مدرس للفصل</div>
+          </div>
+        </div>
+        
+        <div class="form-group" style="margin-top: 30px;">
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+            <i class="fas fa-save"></i> حفظ الفصل
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+  
+  <!-- Toast notifications -->
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  
+  <script>
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.appspot.com",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
+    };
+    
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const storage = firebase.storage();
+    
+    // Global variables
+    let isEditMode = false;
+    let currentClassId = null;
+    let teachersData = [];
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Setup tab navigation
+      setupTabs();
+      
+      // Setup schedule form
+      setupScheduleForm();
+      
+      // Check authentication and permissions
+      await checkAuthAndPermissions();
+      
+      // Check if we're in edit mode
+      checkEditMode();
+    });
+    
+    // Tab navigation setup
+    function setupTabs() {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove active class from all buttons and contents
+          tabBtns.forEach(b => b.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          
+          // Add active class to clicked button and corresponding content
+          const tabId = btn.getAttribute('data-tab');
+          btn.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    }
+    
+    // Check user authentication and permissions
+    async function checkAuthAndPermissions() {
+      return new Promise((resolve) => {
+        auth.onAuthStateChanged(async (user) => {
+          if (!user) {
+            showToast('الرجاء تسجيل الدخول أولاً', 'error');
+            setTimeout(() => window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname), 1500);
+            return;
+          }
+          
+          try {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            
+            if (!userDoc.exists || !userDoc.data().roles.includes('admin')) {
+              showToast('ليس لديك صلاحية إدارة الفصول', 'error');
+              setTimeout(() => window.location.href = 'dashboard.html', 1500);
+              return;
+            }
+            
+            // Load teachers after authentication check
+            await loadTeachers();
+            resolve();
+          } catch (error) {
+            console.error('Error checking permissions:', error);
+            showToast('حدث خطأ في التحقق من الصلاحيات', 'error');
+            setTimeout(() => window.location.href = 'login.html', 1500);
+          }
+        });
+      });
+    }
+    
+    // Check if we're in edit mode and load class data if needed
+    function checkEditMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      currentClassId = urlParams.get('id');
+      
+      if (currentClassId) {
+        isEditMode = true;
+        document.getElementById('pageTitle').textContent = 'تعديل الفصل';
+        loadClassForEditing(currentClassId);
+      }
+    }
+    
+    // Load teachers from Firestore
+    async function loadTeachers() {
+      try {
+        const teachersSnapshot = await db.collection('teachers')
+          .where('status', '==', 'active')
+          .orderBy('name')
+          .get();
+        
+        teachersData = [];
+        const teachersList = document.getElementById('teachersList');
+        teachersList.innerHTML = '';
+        
+        if (teachersSnapshot.empty) {
+          teachersList.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-user-slash"></i>
+              <p>لا يوجد مدرسين متاحين حالياً</p>
+            </div>
+          `;
+          return;
+        }
+        
+        teachersSnapshot.forEach(doc => {
+          const teacher = doc.data();
+          teacher.id = doc.id;
+          teachersData.push(teacher);
+          
+          const teacherItem = document.createElement('div');
+          teacherItem.className = 'teacher-select';
+          
+          teacherItem.innerHTML = `
+            <input type="radio" name="teacher" id="teacher-${doc.id}" value="${doc.id}">
+            <label for="teacher-${doc.id}">
+              <img src="${teacher.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(teacher.name) + '&background=random'}" 
+                   alt="${teacher.name}" 
+                   onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${teacher.name}')+'&background=random'">
+              ${teacher.name}
+              ${teacher.specialization ? `<span class="badge badge-primary">${teacher.specialization}</span>` : ''}
+            </label>
+          `;
+          
+          teachersList.appendChild(teacherItem);
+        });
+      } catch (error) {
+        console.error('Error loading teachers:', error);
+        document.getElementById('teachersList').innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle" style="color: var(--accent-color)"></i>
+            <p>حدث خطأ أثناء تحميل قائمة المدرسين</p>
+            <button onclick="loadTeachers()" class="btn btn-outline" style="margin-top: 10px;">
+              <i class="fas fa-sync-alt"></i> إعادة المحاولة
+            </button>
+          </div>
+        `;
+      }
+    }
+    
+    // Setup schedule form functionality
+    function setupScheduleForm() {
+      const scheduleContainer = document.getElementById('scheduleContainer');
+      
+      // Add new schedule item
+      document.getElementById('addSchedule').addEventListener('click', () => {
+        if (scheduleContainer.querySelector('.empty-state')) {
+          scheduleContainer.innerHTML = '';
+        }
+        
+        const scheduleId = Date.now();
+        const scheduleItem = document.createElement('div');
+        scheduleItem.className = 'schedule-item';
+        scheduleItem.dataset.id = scheduleId;
+        
+        scheduleItem.innerHTML = `
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label>اليوم <span class="required">*</span></label>
+                <select class="form-control schedule-day" required>
+                  <option value="">اختر اليوم</option>
+                  <option value="saturday">السبت</option>
+                  <option value="sunday">الأحد</option>
+                  <option value="monday">الإثنين</option>
+                  <option value="tuesday">الثلاثاء</option>
+                  <option value="wednesday">الأربعاء</option>
+                  <option value="thursday">الخميس</option>
+                  <option value="friday">الجمعة</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label>وقت البدء <span class="required">*</span></label>
+                <input type="time" class="form-control schedule-start" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label>وقت الانتهاء <span class="required">*</span></label>
+                <input type="time" class="form-control schedule-end" required>
+              </div>
+            </div>
+          </div>
+          <div class="conflict-warning">
+            <i class="fas fa-exclamation-circle"></i> يوجد تعارض في المواعيد مع حصة أخرى
+          </div>
+          <button type="button" class="btn btn-danger remove-schedule" onclick="removeSchedule('${scheduleId}')">
+            <i class="fas fa-trash"></i> حذف الحصة
+          </button>
+        `;
+        
+        // Add event listeners for schedule validation
+        const daySelect = scheduleItem.querySelector('.schedule-day');
+        const startInput = scheduleItem.querySelector('.schedule-start');
+        const endInput = scheduleItem.querySelector('.schedule-end');
+        
+        [daySelect, startInput, endInput].forEach(el => {
+          el.addEventListener('change', () => validateScheduleItems());
+        });
+        
+        scheduleContainer.appendChild(scheduleItem);
+        validateScheduleItems();
+      });
+    }
+    
+    // Remove schedule item
+    window.removeSchedule = (id) => {
+      const scheduleItem = document.querySelector(`.schedule-item[data-id="${id}"]`);
+      if (scheduleItem) {
+        if (confirm('هل أنت متأكد من حذف هذه الحصة؟')) {
+          scheduleItem.remove();
+          validateScheduleItems();
+          
+          // Show empty state if no schedules left
+          const scheduleContainer = document.getElementById('scheduleContainer');
+          if (scheduleContainer.children.length === 0) {
+            scheduleContainer.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <p>لا يوجد جدول حصص مضاف حتى الآن</p>
+              </div>
+            `;
+          }
+        }
+      }
+    };
+    
+    // Validate all schedule items for conflicts
+    function validateScheduleItems() {
+      const scheduleItems = document.querySelectorAll('.schedule-item:not(.empty-state)');
+      const schedulesByDay = {};
+      let hasConflicts = false;
+      
+      // Reset all conflict states
+      scheduleItems.forEach(item => {
+        item.classList.remove('conflict');
+      });
+      
+      // Group schedules by day
+      scheduleItems.forEach(item => {
+        const day = item.querySelector('.schedule-day').value;
+        const startTime = item.querySelector('.schedule-start').value;
+        const endTime = item.querySelector('.schedule-end').value;
+        
+        if (day && startTime && endTime) {
+          if (!schedulesByDay[day]) {
+            schedulesByDay[day] = [];
+          }
+          
+          schedulesByDay[day].push({
+            element: item,
+            start: startTime,
+            end: endTime
+          });
+        }
+      });
+      
+      // Check for conflicts in each day
+      Object.values(schedulesByDay).forEach(daySchedules => {
+        if (daySchedules.length < 2) return;
+        
+        // Sort by start time
+        daySchedules.sort((a, b) => a.start.localeCompare(b.start));
+        
+        // Check for overlaps
+        for (let i = 1; i < daySchedules.length; i++) {
+          const prev = daySchedules[i-1];
+          const current = daySchedules[i];
+          
+          if (current.start < prev.end) {
+            prev.element.classList.add('conflict');
+            current.element.classList.add('conflict');
+            hasConflicts = true;
+          }
+        }
+      });
+      
+      return !hasConflicts;
+    }
+    
+    // Load class data for editing
+    async function loadClassForEditing(classId) {
+      try {
+        showLoading(true);
+        
+        const classDoc = await db.collection('classes').doc(classId).get();
+        
+        if (!classDoc.exists) {
+          showToast('الفصل المطلوب غير موجود', 'error');
+          setTimeout(() => window.location.href = 'classes.html', 1500);
+          return;
+        }
+        
+        const classData = classDoc.data();
+        
+        // Fill basic info
+        document.getElementById('classId').value = classId;
+        document.getElementById('className').value = classData.name;
+        document.getElementById('classSubject').value = classData.subject;
+        document.getElementById('classGrade').value = classData.grade;
+        document.getElementById('classCapacity').value = classData.capacity;
+        document.getElementById('classDescription').value = classData.description || '';
+        document.getElementById('isActive').checked = classData.isActive || false;
+        
+        // Fill teacher selection
+        if (classData.teacherId) {
+          // Wait for teachers to load
+          const checkTeacher = setInterval(() => {
+            const teacherRadio = document.querySelector(`input[value="${classData.teacherId}"]`);
+            if (teacherRadio) {
+              teacherRadio.checked = true;
+              clearInterval(checkTeacher);
+            }
+          }, 100);
+        }
+        
+        // Fill schedule
+        const scheduleContainer = document.getElementById('scheduleContainer');
+        scheduleContainer.innerHTML = '';
+        
+        if (classData.schedule && classData.schedule.length > 0) {
+          classData.schedule.forEach(session => {
+            const scheduleId = Date.now();
+            const scheduleItem = document.createElement('div');
+            scheduleItem.className = 'schedule-item';
+            scheduleItem.dataset.id = scheduleId;
+            
+            scheduleItem.innerHTML = `
+              <div class="form-row">
+                <div class="form-col">
+                  <div class="form-group">
+                    <label>اليوم <span class="required">*</span></label>
+                    <select class="form-control schedule-day" required>
+                      <option value="saturday" ${session.day === 'saturday' ? 'selected' : ''}>السبت</option>
+                      <option value="sunday" ${session.day === 'sunday' ? 'selected' : ''}>الأحد</option>
+                      <option value="monday" ${session.day === 'monday' ? 'selected' : ''}>الإثنين</option>
+                      <option value="tuesday" ${session.day === 'tuesday' ? 'selected' : ''}>الثلاثاء</option>
+                      <option value="wednesday" ${session.day === 'wednesday' ? 'selected' : ''}>الأربعاء</option>
+                      <option value="thursday" ${session.day === 'thursday' ? 'selected' : ''}>الخميس</option>
+                      <option value="friday" ${session.day === 'friday' ? 'selected' : ''}>الجمعة</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-col">
+                  <div class="form-group">
+                    <label>وقت البدء <span class="required">*</span></label>
+                    <input type="time" class="form-control schedule-start" value="${session.startTime}" required>
+                  </div>
+                </div>
+                <div class="form-col">
+                  <div class="form-group">
+                    <label>وقت الانتهاء <span class="required">*</span></label>
+                    <input type="time" class="form-control schedule-end" value="${session.endTime}" required>
+                  </div>
+                </div>
+              </div>
+              <div class="conflict-warning">
+                <i class="fas fa-exclamation-circle"></i> يوجد تعارض في المواعيد مع حصة أخرى
+              </div>
+              <button type="button" class="btn btn-danger remove-schedule" onclick="removeSchedule('${scheduleId}')">
+                <i class="fas fa-trash"></i> حذف الحصة
+              </button>
+            `;
+            
+            // Add event listeners for validation
+            const daySelect = scheduleItem.querySelector('.schedule-day');
+            const startInput = scheduleItem.querySelector('.schedule-start');
+            const endInput = scheduleItem.querySelector('.schedule-end');
+            
+            [daySelect, startInput, endInput].forEach(el => {
+              el.addEventListener('change', () => validateScheduleItems());
+            });
+            
+            scheduleContainer.appendChild(scheduleItem);
+          });
+          
+          // Validate the loaded schedule
+          setTimeout(() => validateScheduleItems(), 100);
+        } else {
+          // Add one default schedule if empty
+          document.getElementById('addSchedule').click();
+        }
+        
+        showLoading(false);
+      } catch (error) {
+        console.error('Error loading class:', error);
+        showToast('حدث خطأ أثناء تحميل بيانات الفصل', 'error');
+        setTimeout(() => window.location.href = 'classes.html', 1500);
+      }
+    }
+    
+    // Form submission handler
+    document.getElementById('classForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Validate form
+      if (!validateForm()) return;
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+      
+      try {
+        // Prepare class data
+        const classData = {
+          name: document.getElementById('className').value.trim(),
+          subject: document.getElementById('classSubject').value,
+          grade: document.getElementById('classGrade').value,
+          capacity: parseInt(document.getElementById('classCapacity').value),
+          description: document.getElementById('classDescription').value.trim(),
+          isActive: document.getElementById('isActive').checked,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // Get selected teacher
+        const selectedTeacher = document.querySelector('input[name="teacher"]:checked');
+        if (selectedTeacher) {
+          classData.teacherId = selectedTeacher.value;
+          
+          // Add teacher name for display purposes
+          const teacher = teachersData.find(t => t.id === selectedTeacher.value);
+          if (teacher) {
+            classData.teacherName = teacher.name;
+          }
+        }
+        
+        // Prepare schedule
+        const scheduleItems = document.querySelectorAll('.schedule-item:not(.empty-state)');
+        classData.schedule = Array.from(scheduleItems).map(item => ({
+          day: item.querySelector('.schedule-day').value,
+          startTime: item.querySelector('.schedule-start').value,
+          endTime: item.querySelector('.schedule-end').value
+        }));
+        
+        // Check for schedule conflicts
+        if (!validateScheduleItems()) {
+          showToast('يوجد تعارض في جدول الحصص، الرجاء التصحيح قبل الحفظ', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الفصل';
+          return;
+        }
+        
+        // Save to Firestore
+        if (isEditMode) {
+          // Update existing class
+          await db.collection('classes').doc(currentClassId).update(classData);
+          showToast('تم تحديث الفصل بنجاح', 'success');
+        } else {
+          // Create new class
+          classData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          classData.students = [];
+          classData.studentCount = 0;
+          await db.collection('classes').add(classData);
+          showToast('تم إنشاء الفصل بنجاح', 'success');
+        }
+        
+        // Redirect after short delay
+        setTimeout(() => {
+          window.location.href = 'classes.html';
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Error saving class:', error);
+        showToast('حدث خطأ أثناء حفظ الفصل: ' + error.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الفصل';
+      }
+    });
+    
+    // Validate form fields
+    function validateForm() {
+      let isValid = true;
+      
+      // Validate basic fields
+      const requiredFields = [
+        { id: 'className', message: 'الرجاء إدخال اسم الفصل' },
+        { id: 'classSubject', message: 'الرجاء اختيار المادة الدراسية' },
+        { id: 'classGrade', message: 'الرجاء اختيار الصف الدراسي' },
+        { id: 'classCapacity', message: 'الرجاء إدخال سعة صحيحة بين 1 و 50' }
+      ];
+      
+      requiredFields.forEach(field => {
+        const element = document.getElementById(field.id);
+        const feedback = element.nextElementSibling;
+        
+        if (!element.value || 
+            (field.id === 'classCapacity' && (element.value < 1 || element.value > 50)) {
+          element.classList.add('is-invalid');
+          if (feedback) feedback.style.display = 'block';
+          isValid = false;
+        } else {
+          element.classList.remove('is-invalid');
+          if (feedback) feedback.style.display = 'none';
+        }
+      });
+      
+      // Validate teacher selection
+      const selectedTeacher = document.querySelector('input[name="teacher"]:checked');
+      const teacherError = document.getElementById('teacherError');
+      
+      if (!selectedTeacher) {
+        teacherError.style.display = 'block';
+        isValid = false;
+      } else {
+        teacherError.style.display = 'none';
+      }
+      
+      // Validate schedule
+      const scheduleItems = document.querySelectorAll('.schedule-item:not(.empty-state)');
+      if (scheduleItems.length === 0) {
+        showToast('الرجاء إضافة جدول حصص للفصل', 'error');
+        isValid = false;
+      } else {
+        // Validate each schedule item
+        scheduleItems.forEach(item => {
+          const day = item.querySelector('.schedule-day').value;
+          const start = item.querySelector('.schedule-start').value;
+          const end = item.querySelector('.schedule-end').value;
+          
+          if (!day || !start || !end) {
+            showToast('الرجاء تعبئة جميع حقول جدول الحصص', 'error');
+            isValid = false;
+          }
+          
+          if (start >= end) {
+            showToast('وقت البدء يجب أن يكون قبل وقت الانتهاء', 'error');
+            isValid = false;
+          }
+        });
+      }
+      
+      return isValid;
+    }
+    
+    // Show loading state
+    function showLoading(show) {
+      const submitBtn = document.getElementById('submitBtn');
+      if (show) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الفصل';
+      }
+    }
+    
+    // Show toast notification
+    function showToast(message, type = 'info') {
+      let backgroundColor = '#3498db';
+      
+      switch (type) {
+        case 'success':
+          backgroundColor = '#2ecc71';
+          break;
+        case 'error':
+          backgroundColor = '#e74c3c';
+          break;
+        case 'warning':
+          backgroundColor = '#f39c12';
+          break;
+      }
+      
+      Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: "left",
+        stopOnFocus: true,
+        style: {
+          background: backgroundColor,
+          fontFamily: 'Cairo, sans-serif',
+          borderRadius: '5px'
+        }
+      }).showToast();
+    }
+  </script>
+</body>
+</html>
