@@ -534,7 +534,7 @@
       <div class="content-area">
         <div class="page-header">
           <h2>إدارة المدرسين</h2>
-          <button class="add-teacher-btn">
+          <button class="add-teacher-btn" id="addTeacherBtn">
             <i class="fas fa-plus"></i> <span>إضافة مدرس جديد</span>
           </button>
         </div>
@@ -580,7 +580,7 @@
           </div>
         </div>
         
-        <div class="visible-count" id="visibleCount">عرض جميع المدرسين</div>
+        <div class="visible-count" id="visibleCount">جاري تحميل بيانات المدرسين...</div>
         
         <!-- Teachers Table -->
         <div class="teachers-table">
@@ -597,105 +597,17 @@
               </tr>
             </thead>
             <tbody id="teachersTableBody">
-              <tr data-status="active" data-specialization="math,physics" data-level="secondary" data-search="محمد عبدالله 01234567890">
-                <td><img src="https://randomuser.me/api/portraits/men/11.jpg" class="teacher-avatar"></td>
-                <td>أ. محمد عبدالله</td>
-                <td>01234567890</td>
-                <td>mohamed@example.com</td>
-                <td>
-                  <span class="specialization-tag">الرياضيات</span>
-                  <span class="specialization-tag">الفيزياء</span>
-                </td>
-                <td><span class="status-badge status-active">نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="active" data-specialization="english" data-level="all" data-search="منى أحمد 01123456789">
-                <td><img src="https://randomuser.me/api/portraits/women/12.jpg" class="teacher-avatar"></td>
-                <td>أ. منى أحمد</td>
-                <td>01123456789</td>
-                <td>mona@example.com</td>
-                <td>
-                  <span class="specialization-tag">اللغة الإنجليزية</span>
-                </td>
-                <td><span class="status-badge status-active">نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="inactive" data-specialization="chemistry,biology" data-level="secondary" data-search="خالد وليد 01098765432">
-                <td><img src="https://randomuser.me/api/portraits/men/13.jpg" class="teacher-avatar"></td>
-                <td>أ. خالد وليد</td>
-                <td>01098765432</td>
-                <td>khaled@example.com</td>
-                <td>
-                  <span class="specialization-tag">الكيمياء</span>
-                  <span class="specialization-tag">الأحياء</span>
-                </td>
-                <td><span class="status-badge status-inactive">غير نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="active" data-specialization="arabic,history" data-level="prep" data-search="سارة أمير 01543217890">
-                <td><img src="https://randomuser.me/api/portraits/women/14.jpg" class="teacher-avatar"></td>
-                <td>أ. سارة أمير</td>
-                <td>01543217890</td>
-                <td>sara@example.com</td>
-                <td>
-                  <span class="specialization-tag">اللغة العربية</span>
-                  <span class="specialization-tag">التاريخ</span>
-                </td>
-                <td><span class="status-badge status-active">نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="active" data-specialization="math,physics" data-level="university" data-search="محمود كمال 01234567891">
-                <td><img src="https://randomuser.me/api/portraits/men/15.jpg" class="teacher-avatar"></td>
-                <td>أ. محمود كمال</td>
-                <td>01234567891</td>
-                <td>mahmoud@example.com</td>
-                <td>
-                  <span class="specialization-tag">الرياضيات</span>
-                  <span class="specialization-tag">الفيزياء</span>
-                </td>
-                <td><span class="status-badge status-active">نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="pending" data-specialization="geography" data-level="secondary" data-search="نورا أحمد 01012345678">
-                <td><img src="https://randomuser.me/api/portraits/women/16.jpg" class="teacher-avatar"></td>
-                <td>أ. نورا أحمد</td>
-                <td>01012345678</td>
-                <td>nora@example.com</td>
-                <td>
-                  <span class="specialization-tag">الجغرافيا</span>
-                </td>
-                <td><span class="status-badge status-pending">في انتظار الموافقة</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
+              <!-- سيتم ملؤه ديناميكياً من Firebase -->
+              <tr class="loading-row">
+                <td colspan="7" style="text-align: center; padding: 30px;">
+                  <i class="fas fa-spinner fa-spin"></i> جاري تحميل بيانات المدرسين...
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="table-footer">
-            <div id="paginationInfo">عرض 1 إلى 6 من 6 مدخلات</div>
-            <div class="pagination">
+            <div id="paginationInfo">عرض 0 إلى 0 من 0 مدخلات</div>
+            <div class="pagination" id="pagination">
               <a href="#" class="disabled">السابق</a>
               <a href="#" class="active">1</a>
               <a href="#">2</a>
@@ -708,11 +620,97 @@
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
+    <div class="modal-content">
+      <h3 id="modalTitle" class="modal-title">تأكيد الحذف</h3>
+      <p id="modalDescription">هل أنت متأكد أنك تريد حذف هذا المدرس؟ لا يمكن التراجع عن هذا الإجراء.</p>
+      <div class="modal-actions">
+        <button id="cancelDelete" class="cancel-btn">إلغاء</button>
+        <button id="confirmDelete" class="confirm-btn">حذف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+
   <script>
-    // Toggle sidebar on mobile
-    document.getElementById('sidebarToggle').addEventListener('click', function() {
-      document.querySelector('.sidebar').classList.toggle('active');
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.firebasestorage.app",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Global variables
+    let teachers = [];
+    let filteredTeachers = [];
+    let currentTeacherToDelete = null;
+    const itemsPerPage = 10;
+    let currentPage = 1;
+
+    // Check authentication and admin status
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        // حفظ الصفحة الحالية قبل التوجيه للدخول
+        sessionStorage.setItem('redirectAfterLogin', window.location.href);
+        window.location.href = "index.html";
+        return;
+      }
+      
+      try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        
+        if (!userDoc.exists || userDoc.data().role !== "admin") {
+          alert("ليس لديك صلاحيات الدخول إلى هذه الصفحة");
+          window.location.href = "dashboard.html";
+          return;
+        }
+        
+        // إذا كان مسؤولاً ومسجلاً دخوله، استمر في تحميل الصفحة
+        initializePage();
+        loadTeachers();
+        
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        window.location.href = "dashboard.html";
+      }
     });
+
+    function initializePage() {
+      // Initialize event listeners
+      document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+      document.getElementById('addTeacherBtn').addEventListener('click', () => {
+        window.location.href = "edit_teacher.html";
+      });
+      document.getElementById('statusFilter').addEventListener('change', filterTeachers);
+      document.getElementById('specializationFilter').addEventListener('change', filterTeachers);
+      document.getElementById('levelFilter').addEventListener('change', filterTeachers);
+      document.getElementById('searchInput').addEventListener('input', filterTeachers);
+      document.getElementById('globalSearch').addEventListener('input', filterTeachers);
+      document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
+      document.getElementById('confirmDelete').addEventListener('click', confirmDeleteTeacher);
+      
+      // Setup pagination
+      setupPagination();
+    }
+
+    // Toggle sidebar on mobile
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('active');
+    }
     
     // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function(event) {
@@ -725,81 +723,254 @@
       }
     });
 
-    // Advanced Filtering System for Teachers
-    document.addEventListener('DOMContentLoaded', function() {
-      const statusFilter = document.getElementById('statusFilter');
-      const specializationFilter = document.getElementById('specializationFilter');
-      const levelFilter = document.getElementById('levelFilter');
-      const searchInput = document.getElementById('searchInput');
-      const globalSearch = document.getElementById('globalSearch');
-      const teacherRows = document.querySelectorAll('#teachersTableBody tr');
-      const visibleCount = document.getElementById('visibleCount');
-      const paginationInfo = document.getElementById('paginationInfo');
-
-      function updateVisibleCount() {
-        const visibleRows = document.querySelectorAll('#teachersTableBody tr:not(.hidden)');
-        const totalRows = teacherRows.length;
-        visibleCount.textContent = `عرض ${visibleRows.length} من ${totalRows} مدرس`;
-        paginationInfo.textContent = `عرض 1 إلى ${visibleRows.length} من ${totalRows} مدخلات`;
-      }
-
-      function filterTeachers() {
-        const statusValue = statusFilter.value;
-        const specializationValue = specializationFilter.value;
-        const levelValue = levelFilter.value;
-        const searchValue = searchInput.value.toLowerCase();
-        const globalSearchValue = globalSearch.value.toLowerCase();
-
-        teacherRows.forEach(row => {
-          const rowStatus = row.getAttribute('data-status');
-          const rowSpecializations = row.getAttribute('data-specialization').split(',');
-          const rowLevel = row.getAttribute('data-level');
-          const rowSearch = row.getAttribute('data-search').toLowerCase();
-
-          // Status filter
-          const statusMatch = statusValue === 'all' || rowStatus === statusValue;
-          
-          // Specialization filter
-          let specializationMatch = true;
-          if (specializationValue !== 'all') {
-            specializationMatch = rowSpecializations.includes(specializationValue);
-          }
-          
-          // Level filter
-          const levelMatch = levelValue === 'all' || rowLevel === levelValue || rowLevel === 'all';
-          
-          // Search filter
-          let searchMatch = true;
-          if (searchValue) {
-            searchMatch = rowSearch.includes(searchValue);
-          }
-          
-          // Global search filter
-          let globalSearchMatch = true;
-          if (globalSearchValue) {
-            globalSearchMatch = rowSearch.includes(globalSearchValue);
-          }
-
-          // Show/hide row based on filters
-          if (statusMatch && specializationMatch && levelMatch && searchMatch && globalSearchMatch) {
-            row.classList.remove('hidden');
-          } else {
-            row.classList.add('hidden');
-          }
+    // Load teachers from Firestore
+    async function loadTeachers() {
+      try {
+        const querySnapshot = await db.collection("teachers")
+          .orderBy("fullName")
+          .get();
+        
+        teachers = [];
+        querySnapshot.forEach(doc => {
+          const teacher = doc.data();
+          teacher.id = doc.id;
+          teachers.push(teacher);
         });
-
-        updateVisibleCount();
+        
+        filterTeachers();
+        
+      } catch (error) {
+        console.error("Error loading teachers:", error);
+        document.getElementById('teachersTableBody').innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: #e74c3c; padding: 30px;">
+              <i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء تحميل بيانات المدرسين
+            </td>
+          </tr>
+        `;
       }
+    }
 
-      // Add event listeners for filter changes
-      statusFilter.addEventListener('change', filterTeachers);
-      specializationFilter.addEventListener('change', filterTeachers);
-      levelFilter.addEventListener('change', filterTeachers);
-      searchInput.addEventListener('input', filterTeachers);
-      globalSearch.addEventListener('input', filterTeachers);
+    // Filter teachers based on selected filters
+    function filterTeachers() {
+      const statusValue = document.getElementById('statusFilter').value;
+      const specializationValue = document.getElementById('specializationFilter').value;
+      const levelValue = document.getElementById('levelFilter').value;
+      const searchValue = document.getElementById('searchInput').value.toLowerCase();
+      const globalSearchValue = document.getElementById('globalSearch').value.toLowerCase();
+      
+      filteredTeachers = teachers.filter(teacher => {
+        // Status filter
+        const statusMatch = statusValue === 'all' || teacher.status === statusValue;
+        
+        // Specialization filter
+        let specializationMatch = true;
+        if (specializationValue !== 'all') {
+          specializationMatch = teacher.specializations && teacher.specializations.includes(specializationValue);
+        }
+        
+        // Level filter
+        let levelMatch = true;
+        if (levelValue !== 'all') {
+          levelMatch = teacher.levels && teacher.levels.includes(levelValue);
+        }
+        
+        // Search filter
+        let searchMatch = true;
+        if (searchValue) {
+          searchMatch = (teacher.fullName && teacher.fullName.toLowerCase().includes(searchValue)) || 
+                        (teacher.phone && teacher.phone.includes(searchValue));
+        }
+        
+        // Global search filter
+        let globalSearchMatch = true;
+        if (globalSearchValue) {
+          globalSearchMatch = (teacher.fullName && teacher.fullName.toLowerCase().includes(globalSearchValue)) || 
+                              (teacher.phone && teacher.phone.includes(globalSearchValue)) ||
+                              (teacher.email && teacher.email.toLowerCase().includes(globalSearchValue));
+        }
+        
+        return statusMatch && specializationMatch && levelMatch && searchMatch && globalSearchMatch;
+      });
+      
+      currentPage = 1;
+      renderTeachers();
+      updatePagination();
+    }
 
-      // Initialize count
-      updateVisibleCount();
+    // Render teachers to the table
+    function renderTeachers() {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedTeachers = filteredTeachers.slice(startIndex, endIndex);
+      
+      const tableBody = document.getElementById('teachersTableBody');
+      
+      if (filteredTeachers.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 30px;">
+              لا توجد نتائج مطابقة للبحث
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tableBody.innerHTML = paginatedTeachers.map(teacher => {
+        // Get specialization names
+        const specializationNames = {
+          math: "الرياضيات",
+          physics: "الفيزياء",
+          chemistry: "الكيمياء",
+          biology: "الأحياء",
+          english: "الإنجليزية",
+          arabic: "العربية",
+          history: "التاريخ",
+          geography: "الجغرافيا"
+        };
+        
+        const specializations = teacher.specializations ? 
+          teacher.specializations.map(spec => specializationNames[spec] || spec) : [];
+        
+        // Get status badge
+        let statusBadge = '';
+        if (teacher.status === 'active') {
+          statusBadge = '<span class="status-badge status-active">نشط</span>';
+        } else if (teacher.status === 'inactive') {
+          statusBadge = '<span class="status-badge status-inactive">غير نشط</span>';
+        } else {
+          statusBadge = '<span class="status-badge status-pending">في انتظار الموافقة</span>';
+        }
+        
+        // Create searchable text for filtering
+        const searchText = `${teacher.fullName || ''} ${teacher.phone || ''}`.toLowerCase();
+        
+        return `
+          <tr data-status="${teacher.status || ''}" 
+              data-specialization="${teacher.specializations ? teacher.specializations.join(',') : ''}" 
+              data-level="${teacher.levels ? teacher.levels.join(',') : ''}" 
+              data-search="${searchText}">
+            <td><img src="${teacher.avatarUrl || 'https://randomuser.me/api/portraits/men/11.jpg'}" class="teacher-avatar" alt="${teacher.fullName}"></td>
+            <td>${teacher.fullName || 'غير محدد'}</td>
+            <td>${teacher.phone || 'غير محدد'}</td>
+            <td>${teacher.email || 'غير محدد'}</td>
+            <td>
+              ${specializations.map(spec => `<span class="specialization-tag">${spec}</span>`).join('')}
+            </td>
+            <td>${statusBadge}</td>
+            <td>
+              <button class="action-btn view" onclick="viewTeacher('${teacher.id}')"><i class="fas fa-eye"></i> عرض</button>
+              <button class="action-btn edit" onclick="editTeacher('${teacher.id}')"><i class="fas fa-edit"></i> تعديل</button>
+              <button class="action-btn delete" onclick="showDeleteModal('${teacher.id}')"><i class="fas fa-trash"></i> حذف</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      
+      // Update visible count
+      document.getElementById('visibleCount').textContent = `عرض ${startIndex + 1} إلى ${Math.min(endIndex, filteredTeachers.length)} من ${filteredTeachers.length} مدرس`;
+      document.getElementById('paginationInfo').textContent = `عرض ${startIndex + 1} إلى ${Math.min(endIndex, filteredTeachers.length)} من ${filteredTeachers.length} مدخلات`;
+    }
+
+    // Setup pagination
+    function setupPagination() {
+      const pagination = document.getElementById('pagination');
+      pagination.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (e.target.tagName === 'A') {
+          const action = e.target.textContent;
+          
+          if (action === 'التالي' && currentPage < Math.ceil(filteredTeachers.length / itemsPerPage)) {
+            currentPage++;
+            renderTeachers();
+          } else if (action === 'السابق' && currentPage > 1) {
+            currentPage--;
+            renderTeachers();
+          } else if (!isNaN(parseInt(action))) {
+            currentPage = parseInt(action);
+            renderTeachers();
+          }
+          
+          updatePagination();
+        }
+      });
+    }
+
+    // Update pagination UI
+    function updatePagination() {
+      const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
+      const pagination = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        pagination.style.display = 'none';
+        return;
+      }
+      
+      pagination.style.display = 'flex';
+      
+      let paginationHTML = `
+        <a href="#" class="${currentPage === 1 ? 'disabled' : ''}">السابق</a>
+      `;
+      
+      for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `
+          <a href="#" class="${currentPage === i ? 'active' : ''}">${i}</a>
+        `;
+      }
+      
+      paginationHTML += `
+        <a href="#" class="${currentPage === totalPages ? 'disabled' : ''}">التالي</a>
+      `;
+      
+      pagination.innerHTML = paginationHTML;
+    }
+
+    // View teacher details
+    window.viewTeacher = function(teacherId) {
+      window.location.href = `edit_teacher.html?id=${teacherId}&view=true`;
+    };
+
+    // Edit teacher
+    window.editTeacher = function(teacherId) {
+      window.location.href = `edit_teacher.html?id=${teacherId}`;
+    };
+
+    // Show delete confirmation modal
+    window.showDeleteModal = function(teacherId) {
+      currentTeacherToDelete = teacherId;
+      document.getElementById('deleteModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    // Close delete modal
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      currentTeacherToDelete = null;
+    }
+
+    // Confirm delete teacher
+    async function confirmDeleteTeacher() {
+      if (!currentTeacherToDelete) return;
+      
+      try {
+        await db.collection("teachers").doc(currentTeacherToDelete).delete();
+        alert("تم حذف المدرس بنجاح");
+        loadTeachers();
+        closeDeleteModal();
+      } catch (error) {
+        console.error("Error deleting teacher:", error);
+        alert("حدث خطأ أثناء حذف المدرس");
+      }
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('deleteModal')) {
+        closeDeleteModal();
+      }
     });
   </script>
 </body>

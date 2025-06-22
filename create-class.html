@@ -1008,7 +1008,7 @@
         const feedback = element.nextElementSibling;
         
         if (!element.value || 
-            (field.id === 'classCapacity' && (element.value < 1 || element.value > 50)) {
+            (field.id === 'classCapacity' && (element.value < 1 || element.value > 50))) {
           element.classList.add('is-invalid');
           if (feedback) feedback.style.display = 'block';
           isValid = false;

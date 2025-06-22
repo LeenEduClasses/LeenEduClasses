@@ -523,6 +523,15 @@
       }
     }
   </style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة الطلاب - LeenClasses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ... (كل أنماط CSS السابقة تبقى كما هي) ... */
+  </style>
 </head>
 <body>
   <div class="dashboard-container">
@@ -581,17 +590,17 @@
       <div class="content-area">
         <div class="page-header">
           <h2>إدارة الطلاب</h2>
-          <button class="add-student-btn">
-            <i class="fas fa-plus"></i> إضافة طالب جديد
+          <button class="add-student-btn" id="addStudentBtn">
+            <i class="fas fa-plus"></i> <span>إضافة طالب جديد</span>
           </button>
         </div>
         
         <!-- Quick Actions -->
         <div class="quick-actions">
-          <button class="quick-action-btn export-btn">
+          <button class="quick-action-btn export-btn" id="exportBtn">
             <i class="fas fa-file-export"></i> تصدير البيانات
           </button>
-          <button class="quick-action-btn import-btn">
+          <button class="quick-action-btn import-btn" id="importBtn">
             <i class="fas fa-file-import"></i> استيراد بيانات
           </button>
         </div>
@@ -612,12 +621,14 @@
             <label>الفصل الدراسي:</label>
             <select id="classFilter">
               <option value="all">الكل</option>
-              <option value="math">الرياضيات المتقدمة</option>
-              <option value="english">اللغة الإنجليزية</option>
-              <option value="science">العلوم</option>
-              <option value="arabic">اللغة العربية</option>
+              <option value="math">الرياضيات</option>
               <option value="physics">الفيزياء</option>
               <option value="chemistry">الكيمياء</option>
+              <option value="biology">الأحياء</option>
+              <option value="english">الإنجليزية</option>
+              <option value="arabic">العربية</option>
+              <option value="history">التاريخ</option>
+              <option value="geography">الجغرافيا</option>
             </select>
           </div>
           <div class="filter-group">
@@ -627,6 +638,7 @@
               <option value="primary">ابتدائي</option>
               <option value="prep">إعدادي</option>
               <option value="secondary">ثانوي</option>
+              <option value="university">جامعي</option>
             </select>
           </div>
           <div class="filter-group">
@@ -635,7 +647,7 @@
           </div>
         </div>
         
-        <div class="visible-count" id="visibleCount">عرض جميع الطلاب</div>
+        <div class="visible-count" id="visibleCount">جاري تحميل بيانات الطلاب...</div>
         
         <!-- Students Table -->
         <div class="students-table">
@@ -652,125 +664,20 @@
               </tr>
             </thead>
             <tbody id="studentsTableBody">
-              <tr data-status="active" data-class="math,science" data-level="secondary" data-search="أحمد محمد علي 01234567890">
-                <td><img src="https://randomuser.me/api/portraits/men/1.jpg" class="student-avatar"></td>
-                <td>أحمد محمد علي</td>
-                <td>01234567890</td>
-                <td>ahmed@example.com</td>
-                <td>
-                  <span class="class-tag">الرياضيات</span>
-                  <span class="class-tag">العلوم</span>
-                </td>
-                <td><span class="status-badge status-active">نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="active" data-class="english" data-level="prep" data-search="منى أحمد محمود 01123456789">
-                <td><img src="https://randomuser.me/api/portraits/women/2.jpg" class="student-avatar"></td>
-                <td>منى أحمد محمود</td>
-                <td>01123456789</td>
-                <td>mona@example.com</td>
-                <td>
-                  <span class="class-tag">اللغة الإنجليزية</span>
-                </td>
-                <td><span class="status-badge status-active">نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="inactive" data-class="math,physics" data-level="secondary" data-search="خالد وليد سعيد 01098765432">
-                <td><img src="https://randomuser.me/api/portraits/men/3.jpg" class="student-avatar"></td>
-                <td>خالد وليد سعيد</td>
-                <td>01098765432</td>
-                <td>khaled@example.com</td>
-                <td>
-                  <span class="class-tag">الرياضيات</span>
-                  <span class="class-tag">الفيزياء</span>
-                </td>
-                <td><span class="status-badge status-inactive">غير نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="pending" data-class="chemistry" data-level="secondary" data-search="سارة أمير فتحي 01543217890">
-                <td><img src="https://randomuser.me/api/portraits/women/4.jpg" class="student-avatar"></td>
-                <td>سارة أمير فتحي</td>
-                <td>01543217890</td>
-                <td>sara@example.com</td>
-                <td>
-                  <span class="class-tag">الكيمياء</span>
-                </td>
-                <td><span class="status-badge status-pending">في انتظار</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="overdue" data-class="arabic" data-level="primary" data-search="محمود كمال الدين 01234567891">
-                <td><img src="https://randomuser.me/api/portraits/men/5.jpg" class="student-avatar"></td>
-                <td>محمود كمال الدين</td>
-                <td>01234567891</td>
-                <td>mahmoud@example.com</td>
-                <td>
-                  <span class="class-tag">اللغة العربية</span>
-                </td>
-                <td><span class="status-badge status-overdue">متأخر في الدفع</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="active" data-class="physics,chemistry" data-level="secondary" data-search="نورا أحمد حسين 01012345678">
-                <td><img src="https://randomuser.me/api/portraits/women/6.jpg" class="student-avatar"></td>
-                <td>نورا أحمد حسين</td>
-                <td>01012345678</td>
-                <td>nora@example.com</td>
-                <td>
-                  <span class="class-tag">الفيزياء</span>
-                  <span class="class-tag">الكيمياء</span>
-                </td>
-                <td><span class="status-badge status-active">نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
-                </td>
-              </tr>
-              <tr data-status="inactive" data-class="science" data-level="prep" data-search="يوسف محمد سعيد 01198765432">
-                <td><img src="https://randomuser.me/api/portraits/men/7.jpg" class="student-avatar"></td>
-                <td>يوسف محمد سعيد</td>
-                <td>01198765432</td>
-                <td>youssef@example.com</td>
-                <td>
-                  <span class="class-tag">العلوم</span>
-                </td>
-                <td><span class="status-badge status-inactive">غير نشط</span></td>
-                <td>
-                  <button class="action-btn view"><i class="fas fa-eye"></i> عرض</button>
-                  <button class="action-btn edit"><i class="fas fa-edit"></i> تعديل</button>
-                  <button class="action-btn delete"><i class="fas fa-trash"></i> حذف</button>
+              <tr class="loading-row">
+                <td colspan="7" style="text-align: center; padding: 30px;">
+                  <i class="fas fa-spinner fa-spin"></i> جاري تحميل بيانات الطلاب...
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="table-footer">
-            <div id="paginationInfo">عرض 1 إلى 7 من 7 مدخلات</div>
-            <div class="pagination">
+            <div id="paginationInfo">عرض 0 إلى 0 من 0 مدخلات</div>
+            <div class="pagination" id="pagination">
               <a href="#" class="disabled">السابق</a>
               <a href="#" class="active">1</a>
               <a href="#">2</a>
               <a href="#">3</a>
-              <a href="#">4</a>
-              <a href="#">5</a>
               <a href="#">التالي</a>
             </div>
           </div>
@@ -779,11 +686,99 @@
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
+    <div class="modal-content">
+      <h3 id="modalTitle" class="modal-title">تأكيد الحذف</h3>
+      <p id="modalDescription">هل أنت متأكد أنك تريد حذف هذا الطالب؟ لا يمكن التراجع عن هذا الإجراء.</p>
+      <div class="modal-actions">
+        <button id="cancelDelete" class="cancel-btn">إلغاء</button>
+        <button id="confirmDelete" class="confirm-btn">حذف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+
   <script>
-    // Toggle sidebar on mobile
-    document.getElementById('sidebarToggle').addEventListener('click', function() {
-      document.querySelector('.sidebar').classList.toggle('active');
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.firebasestorage.app",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const storage = firebase.storage();
+
+    // Global variables
+    let students = [];
+    let filteredStudents = [];
+    let currentStudentToDelete = null;
+    const itemsPerPage = 10;
+    let currentPage = 1;
+
+    // Check authentication and admin status
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        sessionStorage.setItem('redirectAfterLogin', window.location.href);
+        window.location.href = "index.html";
+        return;
+      }
+      
+      try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        
+        if (!userDoc.exists || userDoc.data().role !== "admin") {
+          alert("ليس لديك صلاحيات الدخول إلى هذه الصفحة");
+          window.location.href = "dashboard.html";
+          return;
+        }
+        
+        initializePage();
+        loadStudents();
+        
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        window.location.href = "dashboard.html";
+      }
     });
+
+    function initializePage() {
+      // Initialize event listeners
+      document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+      document.getElementById('addStudentBtn').addEventListener('click', () => {
+        window.location.href = "edit_student.html";
+      });
+      document.getElementById('exportBtn').addEventListener('click', exportStudents);
+      document.getElementById('importBtn').addEventListener('click', importStudents);
+      document.getElementById('statusFilter').addEventListener('change', filterStudents);
+      document.getElementById('classFilter').addEventListener('change', filterStudents);
+      document.getElementById('levelFilter').addEventListener('change', filterStudents);
+      document.getElementById('searchInput').addEventListener('input', filterStudents);
+      document.getElementById('globalSearch').addEventListener('input', filterStudents);
+      document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
+      document.getElementById('confirmDelete').addEventListener('click', confirmDeleteStudent);
+      
+      // Setup pagination
+      setupPagination();
+    }
+
+    // Toggle sidebar on mobile
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('active');
+    }
     
     // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function(event) {
@@ -796,81 +791,277 @@
       }
     });
 
-    // Advanced Filtering System
-    document.addEventListener('DOMContentLoaded', function() {
-      const statusFilter = document.getElementById('statusFilter');
-      const classFilter = document.getElementById('classFilter');
-      const levelFilter = document.getElementById('levelFilter');
-      const searchInput = document.getElementById('searchInput');
-      const globalSearch = document.getElementById('globalSearch');
-      const studentRows = document.querySelectorAll('#studentsTableBody tr');
-      const visibleCount = document.getElementById('visibleCount');
-      const paginationInfo = document.getElementById('paginationInfo');
-
-      function updateVisibleCount() {
-        const visibleRows = document.querySelectorAll('#studentsTableBody tr:not(.hidden)');
-        const totalRows = studentRows.length;
-        visibleCount.textContent = `عرض ${visibleRows.length} من ${totalRows} طالب`;
-        paginationInfo.textContent = `عرض 1 إلى ${visibleRows.length} من ${totalRows} مدخلات`;
-      }
-
-      function filterStudents() {
-        const statusValue = statusFilter.value;
-        const classValue = classFilter.value;
-        const levelValue = levelFilter.value;
-        const searchValue = searchInput.value.toLowerCase();
-        const globalSearchValue = globalSearch.value.toLowerCase();
-
-        studentRows.forEach(row => {
-          const rowStatus = row.getAttribute('data-status');
-          const rowClasses = row.getAttribute('data-class').split(',');
-          const rowLevel = row.getAttribute('data-level');
-          const rowSearch = row.getAttribute('data-search').toLowerCase();
-
-          // Status filter
-          const statusMatch = statusValue === 'all' || rowStatus === statusValue;
-          
-          // Class filter
-          let classMatch = true;
-          if (classValue !== 'all') {
-            classMatch = rowClasses.includes(classValue);
-          }
-          
-          // Level filter
-          const levelMatch = levelValue === 'all' || rowLevel === levelValue;
-          
-          // Search filter
-          let searchMatch = true;
-          if (searchValue) {
-            searchMatch = rowSearch.includes(searchValue);
-          }
-          
-          // Global search filter
-          let globalSearchMatch = true;
-          if (globalSearchValue) {
-            globalSearchMatch = rowSearch.includes(globalSearchValue);
-          }
-
-          // Show/hide row based on filters
-          if (statusMatch && classMatch && levelMatch && searchMatch && globalSearchMatch) {
-            row.classList.remove('hidden');
-          } else {
-            row.classList.add('hidden');
-          }
+    // Load students from Firestore
+    async function loadStudents() {
+      try {
+        const querySnapshot = await db.collection("students")
+          .orderBy("fullName")
+          .get();
+        
+        students = [];
+        querySnapshot.forEach(doc => {
+          const student = doc.data();
+          student.id = doc.id;
+          students.push(student);
         });
-
-        updateVisibleCount();
+        
+        filterStudents();
+        
+      } catch (error) {
+        console.error("Error loading students:", error);
+        document.getElementById('studentsTableBody').innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: #e74c3c; padding: 30px;">
+              <i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء تحميل بيانات الطلاب
+            </td>
+          </tr>
+        `;
       }
+    }
 
-      // Add event listeners for filter changes
-      statusFilter.addEventListener('change', filterStudents);
-      classFilter.addEventListener('change', filterStudents);
-      levelFilter.addEventListener('change', filterStudents);
-      searchInput.addEventListener('input', filterStudents);
-      globalSearch.addEventListener('input', filterStudents);
+    // Filter students based on selected filters
+    function filterStudents() {
+      const statusValue = document.getElementById('statusFilter').value;
+      const classValue = document.getElementById('classFilter').value;
+      const levelValue = document.getElementById('levelFilter').value;
+      const searchValue = document.getElementById('searchInput').value.toLowerCase();
+      const globalSearchValue = document.getElementById('globalSearch').value.toLowerCase();
+      
+      filteredStudents = students.filter(student => {
+        // Status filter
+        const statusMatch = statusValue === 'all' || student.status === statusValue;
+        
+        // Class filter
+        let classMatch = true;
+        if (classValue !== 'all') {
+          classMatch = student.classes && student.classes.includes(classValue);
+        }
+        
+        // Level filter
+        let levelMatch = true;
+        if (levelValue !== 'all') {
+          levelMatch = student.level && student.level === levelValue;
+        }
+        
+        // Search filter
+        let searchMatch = true;
+        if (searchValue) {
+          searchMatch = (student.fullName && student.fullName.toLowerCase().includes(searchValue)) || 
+                        (student.phone && student.phone.includes(searchValue));
+        }
+        
+        // Global search filter
+        let globalSearchMatch = true;
+        if (globalSearchValue) {
+          globalSearchMatch = (student.fullName && student.fullName.toLowerCase().includes(globalSearchValue)) || 
+                              (student.phone && student.phone.includes(globalSearchValue)) ||
+                              (student.email && student.email.toLowerCase().includes(globalSearchValue));
+        }
+        
+        return statusMatch && classMatch && levelMatch && searchMatch && globalSearchMatch;
+      });
+      
+      currentPage = 1;
+      renderStudents();
+      updatePagination();
+    }
 
-      // Initialize count
-      updateVisibleCount();
+    // Render students to the table
+    function renderStudents() {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
+      
+      const tableBody = document.getElementById('studentsTableBody');
+      
+      if (filteredStudents.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 30px;">
+              لا توجد نتائج مطابقة للبحث
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tableBody.innerHTML = paginatedStudents.map(student => {
+        // Get class names
+        const classNames = {
+          math: "الرياضيات",
+          physics: "الفيزياء",
+          chemistry: "الكيمياء",
+          biology: "الأحياء",
+          english: "الإنجليزية",
+          arabic: "العربية",
+          history: "التاريخ",
+          geography: "الجغرافيا"
+        };
+        
+        const classes = student.classes ? 
+          student.classes.map(cls => classNames[cls] || cls) : [];
+        
+        // Get status badge
+        let statusBadge = '';
+        if (student.status === 'active') {
+          statusBadge = '<span class="status-badge status-active">نشط</span>';
+        } else if (student.status === 'inactive') {
+          statusBadge = '<span class="status-badge status-inactive">غير نشط</span>';
+        } else if (student.status === 'overdue') {
+          statusBadge = '<span class="status-badge status-overdue">متأخر في الدفع</span>';
+        } else {
+          statusBadge = '<span class="status-badge status-pending">في انتظار</span>';
+        }
+        
+        // Create searchable text for filtering
+        const searchText = `${student.fullName || ''} ${student.phone || ''}`.toLowerCase();
+        
+        return `
+          <tr data-status="${student.status || ''}" 
+              data-class="${student.classes ? student.classes.join(',') : ''}" 
+              data-level="${student.level || ''}" 
+              data-search="${searchText}">
+            <td><img src="${student.avatarUrl || 'https://randomuser.me/api/portraits/men/11.jpg'}" class="student-avatar" alt="${student.fullName}"></td>
+            <td>${student.fullName || 'غير محدد'}</td>
+            <td>${student.phone || 'غير محدد'}</td>
+            <td>${student.email || 'غير محدد'}</td>
+            <td>
+              ${classes.map(cls => `<span class="class-tag">${cls}</span>`).join('')}
+            </td>
+            <td>${statusBadge}</td>
+            <td>
+              <button class="action-btn view" onclick="viewStudent('${student.id}')"><i class="fas fa-eye"></i> عرض</button>
+              <button class="action-btn edit" onclick="editStudent('${student.id}')"><i class="fas fa-edit"></i> تعديل</button>
+              <button class="action-btn delete" onclick="showDeleteModal('${student.id}')"><i class="fas fa-trash"></i> حذف</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      
+      // Update visible count
+      document.getElementById('visibleCount').textContent = `عرض ${startIndex + 1} إلى ${Math.min(endIndex, filteredStudents.length)} من ${filteredStudents.length} طالب`;
+      document.getElementById('paginationInfo').textContent = `عرض ${startIndex + 1} إلى ${Math.min(endIndex, filteredStudents.length)} من ${filteredStudents.length} مدخلات`;
+    }
+
+    // Setup pagination
+    function setupPagination() {
+      const pagination = document.getElementById('pagination');
+      pagination.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (e.target.tagName === 'A') {
+          const action = e.target.textContent;
+          
+          if (action === 'التالي' && currentPage < Math.ceil(filteredStudents.length / itemsPerPage)) {
+            currentPage++;
+            renderStudents();
+          } else if (action === 'السابق' && currentPage > 1) {
+            currentPage--;
+            renderStudents();
+          } else if (!isNaN(parseInt(action))) {
+            currentPage = parseInt(action);
+            renderStudents();
+          }
+          
+          updatePagination();
+        }
+      });
+    }
+
+    // Update pagination UI
+    function updatePagination() {
+      const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+      const pagination = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        pagination.style.display = 'none';
+        return;
+      }
+      
+      pagination.style.display = 'flex';
+      
+      let paginationHTML = `
+        <a href="#" class="${currentPage === 1 ? 'disabled' : ''}">السابق</a>
+      `;
+      
+      // Show limited page numbers
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+          <a href="#" class="${currentPage === i ? 'active' : ''}">${i}</a>
+        `;
+      }
+      
+      paginationHTML += `
+        <a href="#" class="${currentPage === totalPages ? 'disabled' : ''}">التالي</a>
+      `;
+      
+      pagination.innerHTML = paginationHTML;
+    }
+
+    // Export students data
+    function exportStudents() {
+      alert("سيتم تصدير بيانات الطلاب إلى ملف Excel");
+      // يمكنك إضافة منطق التصدير الفعلي هنا
+    }
+
+    // Import students data
+    function importStudents() {
+      alert("سيتم استيراد بيانات الطلاب من ملف Excel");
+      // يمكنك إضافة منطق الاستيراد الفعلي هنا
+    }
+
+    // View student details
+    window.viewStudent = function(studentId) {
+      window.location.href = `edit_student.html?id=${studentId}&view=true`;
+    };
+
+    // Edit student
+    window.editStudent = function(studentId) {
+      window.location.href = `edit_student.html?id=${studentId}`;
+    };
+
+    // Show delete confirmation modal
+    window.showDeleteModal = function(studentId) {
+      currentStudentToDelete = studentId;
+      document.getElementById('deleteModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    // Close delete modal
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      currentStudentToDelete = null;
+    }
+
+    // Confirm delete student
+    async function confirmDeleteStudent() {
+      if (!currentStudentToDelete) return;
+      
+      try {
+        await db.collection("students").doc(currentStudentToDelete).delete();
+        alert("تم حذف الطالب بنجاح");
+        loadStudents();
+        closeDeleteModal();
+      } catch (error) {
+        console.error("Error deleting student:", error);
+        alert("حدث خطأ أثناء حذف الطالب");
+      }
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('deleteModal')) {
+        closeDeleteModal();
+      }
     });
   </script>
 </body>
