@@ -14,6 +14,8 @@
       --accent-color: #e74c3c;
       --light-color: #f8f9fa;
       --dark-color: #343a40;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Cairo", sans-serif; }
     body { background-color: #f5f7fa; }
@@ -21,12 +23,16 @@
       display: flex;
       min-height: 100vh;
     }
+    
     /* Sidebar Styles */
     .sidebar {
       width: var(--sidebar-width);
       background: var(--primary-color);
       color: white;
       transition: all 0.3s;
+      position: fixed;
+      height: 100vh;
+      z-index: 1000;
     }
     .sidebar-header {
       padding: 20px;
@@ -40,6 +46,8 @@
     }
     .sidebar-menu {
       padding: 20px 0;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
     }
     .sidebar-menu h3 {
       padding: 10px 20px;
@@ -67,12 +75,16 @@
       width: 20px;
       text-align: center;
     }
+    
     /* Main Content Styles */
     .main-content {
       flex: 1;
       display: flex;
       flex-direction: column;
+      margin-right: var(--sidebar-width);
+      transition: margin 0.3s;
     }
+    
     /* Top Navbar */
     .top-navbar {
       background: white;
@@ -81,16 +93,21 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 999;
     }
     .search-bar {
       display: flex;
       align-items: center;
+      position: relative;
     }
     .search-bar input {
-      padding: 8px 15px;
+      padding: 10px 15px;
       border: 1px solid #ddd;
       border-radius: 5px;
       width: 300px;
+      font-size: 0.9rem;
     }
     .search-bar button {
       background: none;
@@ -98,6 +115,16 @@
       margin-right: -30px;
       color: #777;
       cursor: pointer;
+      padding: 10px;
+    }
+    .hamburger-menu {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-left: 15px;
     }
     .user-menu {
       display: flex;
@@ -131,7 +158,9 @@
       height: 40px;
       border-radius: 50%;
       margin-left: 10px;
+      object-fit: cover;
     }
+    
     /* Content Area */
     .content-area {
       flex: 1;
@@ -143,9 +172,12 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
     }
     .page-header h2 {
       color: var(--primary-color);
+      font-size: 1.5rem;
     }
     
     /* Classes Grid Styles */
@@ -203,6 +235,7 @@
       height: 40px;
       border-radius: 50%;
       margin-left: 10px;
+      object-fit: cover;
     }
     .class-stats {
       display: flex;
@@ -245,18 +278,32 @@
       background: #fff3cd;
       color: #856404;
     }
+    .enter-btn {
+      background: var(--success-color);
+      color: white;
+    }
+    .delete-btn {
+      background: var(--accent-color);
+      color: white;
+    }
     .add-class-btn {
-      padding: 8px 15px;
+      padding: 10px 15px;
       background: var(--secondary-color);
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-bottom: 20px;
       transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
     }
     .add-class-btn:hover {
       background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+    }
+    .add-class-btn i {
+      margin-left: 8px;
     }
     .filter-bar {
       display: flex;
@@ -266,20 +313,30 @@
       padding: 15px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      flex-wrap: wrap;
+      gap: 15px;
     }
     .filter-group {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .filter-group label {
-      margin-left: 10px;
       color: #555;
+      font-size: 0.9rem;
     }
-    .filter-group select {
+    .filter-group select, .filter-group input {
       padding: 8px 12px;
       border: 1px solid #ddd;
       border-radius: 5px;
       background: white;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    .filter-group select:focus, .filter-group input:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
     }
     .add-new-class {
       display: flex;
@@ -290,6 +347,7 @@
       color: var(--secondary-color);
       cursor: pointer;
       transition: all 0.3s;
+      padding: 30px;
     }
     .add-new-class:hover {
       background: rgba(52, 152, 219, 0.1);
@@ -299,12 +357,53 @@
       margin-bottom: 10px;
     }
     
-    /* Classes for filtering */
-    .hidden {
-      display: none !important;
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    .status-active {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status-finished {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    /* Loading Spinner */
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      grid-column: 1 / -1;
+    }
+    .loading-spinner i {
+      font-size: 2rem;
+      color: var(--secondary-color);
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     
     /* Responsive */
+    @media (max-width: 1199px) {
+      .search-bar input {
+        width: 250px;
+      }
+    }
+    
     @media (max-width: 992px) {
       .sidebar {
         width: 70px;
@@ -315,66 +414,78 @@
       }
       .sidebar-menu li a {
         justify-content: center;
+        padding: 12px 10px;
       }
       .sidebar-menu li a i {
         margin-left: 0;
         font-size: 1.2rem;
       }
+      .main-content {
+        margin-right: 70px;
+      }
       .filter-bar {
         flex-direction: column;
-        gap: 10px;
       }
       .filter-group {
         width: 100%;
-        justify-content: space-between;
       }
     }
+    
     @media (max-width: 768px) {
-      .search-bar input {
-        width: 200px;
-      }
-      .classes-container {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      }
-    }
-    @media (max-width: 576px) {
       .sidebar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 60px;
-        z-index: 1000;
+        transform: translateX(-100%);
+        width: 250px;
       }
-      .sidebar-header {
-        display: none;
-      }
-      .sidebar-menu ul {
-        display: flex;
-      }
-      .sidebar-menu li {
-        flex: 1;
-      }
-      .sidebar-menu li a {
-        flex-direction: column;
-        padding: 10px 5px;
-        font-size: 0.7rem;
-      }
-      .sidebar-menu li a i {
-        margin-left: 0;
-        margin-bottom: 5px;
-        font-size: 1rem;
+      .sidebar.active {
+        transform: translateX(0);
       }
       .main-content {
-        margin-bottom: 60px;
+        margin-right: 0;
+      }
+      .hamburger-menu {
+        display: block;
+      }
+      .search-bar input {
+        width: 180px;
+      }
+      .user-menu .user-profile span {
+        display: none;
       }
       .page-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .top-navbar {
+        padding: 10px 15px;
+      }
+      .search-bar input {
+        width: 150px;
+        padding: 8px 12px;
       }
       .classes-container {
         grid-template-columns: 1fr;
+      }
+      .class-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
+    }
+    
+    @media (max-width: 400px) {
+      .search-bar input {
+        width: 120px;
+      }
+      .user-menu .notification {
+        margin-left: 10px;
+      }
+      .add-class-btn span {
+        display: none;
+      }
+      .add-class-btn {
+        padding: 10px;
       }
     }
   </style>
@@ -411,9 +522,14 @@
     <div class="main-content">
       <!-- Top Navbar -->
       <div class="top-navbar">
-        <div class="search-bar">
-          <input type="text" id="searchInput" placeholder="ابحث هنا...">
-          <button type="submit"><i class="fas fa-search"></i></button>
+        <div style="display: flex; align-items: center;">
+          <button class="hamburger-menu" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="search-bar">
+            <input type="text" placeholder="ابحث هنا..." id="globalSearch">
+            <button type="submit"><i class="fas fa-search"></i></button>
+          </div>
         </div>
         <div class="user-menu">
           <div class="notification">
@@ -431,20 +547,20 @@
       <div class="content-area">
         <div class="page-header">
           <h2>إدارة الفصول الدراسية</h2>
-          <button class="add-class-btn">
-            <i class="fas fa-plus"></i> إضافة فصل جديد
+          <button class="add-class-btn" id="addClassBtn">
+            <i class="fas fa-plus"></i> <span>إضافة فصل جديد</span>
           </button>
         </div>
         
         <!-- Filter Bar -->
         <div class="filter-bar">
           <div class="filter-group">
-            <label>تصفية حسب:</label>
+            <label>حالة الفصل:</label>
             <select id="statusFilter">
               <option value="all">الكل</option>
               <option value="active">نشط</option>
               <option value="finished">منتهي</option>
-              <option value="pending">قيد الانتظار</option>
+              <option value="pending">في انتظار</option>
             </select>
           </div>
           <div class="filter-group">
@@ -452,357 +568,398 @@
             <select id="subjectFilter">
               <option value="all">الكل</option>
               <option value="math">الرياضيات</option>
-              <option value="english">اللغة الإنجليزية</option>
-              <option value="chemistry">الكيمياء</option>
-              <option value="arabic">اللغة العربية</option>
               <option value="physics">الفيزياء</option>
+              <option value="chemistry">الكيمياء</option>
+              <option value="biology">الأحياء</option>
+              <option value="english">الإنجليزية</option>
+              <option value="arabic">العربية</option>
+              <option value="history">التاريخ</option>
+              <option value="geography">الجغرافيا</option>
             </select>
           </div>
           <div class="filter-group">
             <label>المدرس:</label>
             <select id="teacherFilter">
               <option value="all">الكل</option>
-              <option value="mohamed">أ. محمد عبدالله</option>
-              <option value="mona">أ. منى أحمد</option>
-              <option value="khaled">أ. خالد وليد</option>
-              <option value="sara">أ. سارة أمير</option>
-              <option value="mahmoud">أ. محمود كمال</option>
+              <!-- سيتم ملؤه ديناميكياً -->
             </select>
+          </div>
+          <div class="filter-group">
+            <label>بحث:</label>
+            <input type="text" id="searchInput" placeholder="ابحث باسم الفصل...">
           </div>
         </div>
         
         <!-- Classes Grid -->
         <div class="classes-container" id="classesContainer">
-          <!-- Class Card 1 -->
-          <div class="class-card" data-status="active" data-subject="math" data-teacher="mohamed">
-            <div class="class-header">
-              <h3>الرياضيات المتقدمة</h3>
-            </div>
-            <div class="class-body">
-              <div class="class-info">
-                <div class="class-info-item">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>السبت، الإثنين، الأربعاء</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-clock"></i>
-                  <span>5:00 مساءً - 6:30 مساءً</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-user-graduate"></i>
-                  <span>الصف الثاني الثانوي</span>
-                </div>
-              </div>
-              <div class="class-teacher">
-                <img src="https://randomuser.me/api/portraits/men/11.jpg" alt="المدرس">
-                <span>أ. محمد عبدالله</span>
-              </div>
-              <div class="class-stats">
-                <div class="stat-item">
-                  <div class="stat-value">24</div>
-                  <div class="stat-label">طالب</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">12</div>
-                  <div class="stat-label">حصة</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">85%</div>
-                  <div class="stat-label">حضور</div>
-                </div>
-              </div>
-              <div class="class-actions">
-                <button href = "create-class.html" class="class-btn view-btn"><i class="fas fa-eye"></i> عرض</button>
-                <button class="class-btn edit-btn"><i class="fas fa-edit"></i> تعديل</button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Class Card 2 -->
-          <div class="class-card" data-status="active" data-subject="english" data-teacher="mona">
-            <div class="class-header" style="background: #e74c3c;">
-              <h3>اللغة الإنجليزية</h3>
-            </div>
-            <div class="class-body">
-              <div class="class-info">
-                <div class="class-info-item">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>الأحد، الثلاثاء</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-clock"></i>
-                  <span>4:00 مساءً - 5:30 مساءً</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-user-graduate"></i>
-                  <span>الصف الأول الثانوي</span>
-                </div>
-              </div>
-              <div class="class-teacher">
-                <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="المدرس">
-                <span>أ. منى أحمد</span>
-              </div>
-              <div class="class-stats">
-                <div class="stat-item">
-                  <div class="stat-value">18</div>
-                  <div class="stat-label">طالب</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">8</div>
-                  <div class="stat-label">حصة</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">92%</div>
-                  <div class="stat-label">حضور</div>
-                </div>
-              </div>
-              <div class="class-actions">
-                <button class="class-btn view-btn"><i class="fas fa-eye"></i> عرض</button>
-                <button class="class-btn edit-btn"><i class="fas fa-edit"></i> تعديل</button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Class Card 3 -->
-          <div class="class-card" data-status="finished" data-subject="chemistry" data-teacher="khaled">
-            <div class="class-header" style="background: #2ecc71;">
-              <h3>الكيمياء</h3>
-            </div>
-            <div class="class-body">
-              <div class="class-info">
-                <div class="class-info-item">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>الاثنين، الخميس</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-clock"></i>
-                  <span>6:00 مساءً - 7:30 مساءً</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-user-graduate"></i>
-                  <span>الصف الثالث الثانوي</span>
-                </div>
-              </div>
-              <div class="class-teacher">
-                <img src="https://randomuser.me/api/portraits/men/13.jpg" alt="المدرس">
-                <span>أ. خالد وليد</span>
-              </div>
-              <div class="class-stats">
-                <div class="stat-item">
-                  <div class="stat-value">15</div>
-                  <div class="stat-label">طالب</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">10</div>
-                  <div class="stat-label">حصة</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">78%</div>
-                  <div class="stat-label">حضور</div>
-                </div>
-              </div>
-              <div class="class-actions">
-                <button class="class-btn view-btn"><i class="fas fa-eye"></i> عرض</button>
-                <button class="class-btn edit-btn"><i class="fas fa-edit"></i> تعديل</button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Class Card 4 -->
-          <div class="class-card" data-status="pending" data-subject="arabic" data-teacher="sara">
-            <div class="class-header" style="background: #f39c12;">
-              <h3>اللغة العربية</h3>
-            </div>
-            <div class="class-body">
-              <div class="class-info">
-                <div class="class-info-item">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>السبت، الأربعاء</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-clock"></i>
-                  <span>3:00 مساءً - 4:30 مساءً</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-user-graduate"></i>
-                  <span>الصف الثاني الإعدادي</span>
-                </div>
-              </div>
-              <div class="class-teacher">
-                <img src="https://randomuser.me/api/portraits/women/14.jpg" alt="المدرس">
-                <span>أ. سارة أمير</span>
-              </div>
-              <div class="class-stats">
-                <div class="stat-item">
-                  <div class="stat-value">22</div>
-                  <div class="stat-label">طالب</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">6</div>
-                  <div class="stat-label">حصة</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">88%</div>
-                  <div class="stat-label">حضور</div>
-                </div>
-              </div>
-              <div class="class-actions">
-                <button class="class-btn view-btn"><i class="fas fa-eye"></i> عرض</button>
-                <button class="class-btn edit-btn"><i class="fas fa-edit"></i> تعديل</button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Class Card 5 -->
-          <div class="class-card" data-status="active" data-subject="physics" data-teacher="mahmoud">
-            <div class="class-header" style="background: #9b59b6;">
-              <h3>الفيزياء</h3>
-            </div>
-            <div class="class-body">
-              <div class="class-info">
-                <div class="class-info-item">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>الثلاثاء، الجمعة</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-clock"></i>
-                  <span>5:30 مساءً - 7:00 مساءً</span>
-                </div>
-                <div class="class-info-item">
-                  <i class="fas fa-user-graduate"></i>
-                  <span>الصف الأول الثانوي</span>
-                </div>
-              </div>
-              <div class="class-teacher">
-                <img src="https://randomuser.me/api/portraits/men/15.jpg" alt="المدرس">
-                <span>أ. محمود كمال</span>
-              </div>
-              <div class="class-stats">
-                <div class="stat-item">
-                  <div class="stat-value">16</div>
-                  <div class="stat-label">طالب</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">4</div>
-                  <div class="stat-label">حصة</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">82%</div>
-                  <div class="stat-label">حضور</div>
-                </div>
-              </div>
-              <div class="class-actions">
-                <button class="class-btn view-btn"><i class="fas fa-eye"></i> عرض</button>
-                <button class="class-btn edit-btn"><i class="fas fa-edit"></i> تعديل</button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Add New Class Card -->
-          <div class="class-card">
-            <div class="add-new-class">
-              <i class="fas fa-plus-circle"></i>
-              <h3>إضافة فصل جديد</h3>
-            </div>
+          <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
+    <div class="modal-content">
+      <h3 id="modalTitle" class="modal-title">تأكيد الحذف</h3>
+      <p id="modalDescription">هل أنت متأكد أنك تريد حذف هذا الفصل؟ لا يمكن التراجع عن هذا الإجراء.</p>
+      <div class="modal-actions">
+        <button id="cancelDelete" class="cancel-btn">إلغاء</button>
+        <button id="confirmDelete" class="confirm-btn">حذف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get filter elements
-      const statusFilter = document.getElementById('statusFilter');
-      const subjectFilter = document.getElementById('subjectFilter');
-      const teacherFilter = document.getElementById('teacherFilter');
-      const searchInput = document.getElementById('searchInput');
-      const classCards = document.querySelectorAll('.classes-container .class-card');
-      
-      // Function to filter classes
-      function filterClasses() {
-        const statusValue = statusFilter.value;
-        const subjectValue = subjectFilter.value;
-        const teacherValue = teacherFilter.value;
-        const searchValue = searchInput.value.toLowerCase();
-        
-        classCards.forEach(card => {
-          // Skip the "Add New" card
-          if (!card.querySelector('.add-new-class')) {
-            const cardStatus = card.getAttribute('data-status');
-            const cardSubject = card.getAttribute('data-subject');
-            const cardTeacher = card.getAttribute('data-teacher');
-            const cardTitle = card.querySelector('.class-header h3').textContent.toLowerCase();
-            
-            // Check if card matches all filters
-            const statusMatch = statusValue === 'all' || cardStatus === statusValue;
-            const subjectMatch = subjectValue === 'all' || cardSubject === subjectValue;
-            const teacherMatch = teacherValue === 'all' || cardTeacher === teacherValue;
-            const searchMatch = searchValue === '' || cardTitle.includes(searchValue);
-            
-            if (statusMatch && subjectMatch && teacherMatch && searchMatch) {
-              card.style.display = 'block';
-            } else {
-              card.style.display = 'none';
-            }
-          }
-        });
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdqZzMGmJs6PrhF3mVzoM8FlUSamh1FO0",
+      authDomain: "leeneduclasses-2022.firebaseapp.com",
+      projectId: "leeneduclasses-2022",
+      storageBucket: "leeneduclasses-2022.firebasestorage.app",
+      messagingSenderId: "850348851753",
+      appId: "1:850348851753:web:278a2902dc2696268b9238",
+      measurementId: "G-WEK2KG58NM"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Global variables
+    let classes = [];
+    let teachers = [];
+    let filteredClasses = [];
+    let currentClassToDelete = null;
+
+    // Check authentication and admin status
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        // حفظ الصفحة الحالية قبل التوجيه للدخول
+        sessionStorage.setItem('redirectAfterLogin', window.location.href);
+        window.location.href = "index.html";
+        return;
       }
       
-      // Add event listeners to filters
-      statusFilter.addEventListener('change', filterClasses);
-      subjectFilter.addEventListener('change', filterClasses);
-      teacherFilter.addEventListener('change', filterClasses);
-      searchInput.addEventListener('input', filterClasses);
+      try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        
+        if (!userDoc.exists || userDoc.data().role !== "admin") {
+          alert("ليس لديك صلاحيات الدخول إلى هذه الصفحة");
+          window.location.href = "dashboard.html";
+          return;
+        }
+        
+        // إذا كان مسؤولاً ومسجلاً دخوله، استمر في تحميل الصفحة
+        initializePage();
+        loadTeachers();
+        loadClasses();
+        
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        window.location.href = "dashboard.html";
+      }
+    });
+
+    function initializePage() {
+      // Initialize event listeners
+      document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+      document.getElementById('addClassBtn').addEventListener('click', () => {
+        window.location.href = "edit_class.html";
+      });
+      document.getElementById('statusFilter').addEventListener('change', filterClasses);
+      document.getElementById('subjectFilter').addEventListener('change', filterClasses);
+      document.getElementById('teacherFilter').addEventListener('change', filterClasses);
+      document.getElementById('searchInput').addEventListener('input', filterClasses);
+      document.getElementById('globalSearch').addEventListener('input', filterClasses);
+      document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
+      document.getElementById('confirmDelete').addEventListener('click', confirmDeleteClass);
       
-      // Initialize filter on page load
-      filterClasses();
-    });
-  
+      // Close modal when clicking outside
+      window.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('deleteModal')) {
+          closeDeleteModal();
+        }
+      });
+    }
 
-
-
-document.addEventListener('DOMContentLoaded', function() {
-  // ... الكود الحالي ...
-  
-  // إضافة مستمع حدث لزر إضافة فصل جديد
-  document.querySelector('.add-class-btn').addEventListener('click', function() {
-    window.location.href = 'create-class.html';
-  });
-  
-  // إضافة مستمع أحداث لأزرار الدخول للفصل
-  document.querySelectorAll('.enter-class-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const classId = this.getAttribute('data-class-id');
-      enterVirtualClass(classId);
-    });
-  });
-  
-  // إضافة مستمع أحداث لأزرار التعديل
-  document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const classId = this.closest('.class-card').getAttribute('data-class-id');
-      window.location.href = `create-class.html?id=${classId}`;
-    });
-  });
-});
-
-// دالة للانتقال إلى الفصل الافتراضي
-async function enterVirtualClass(classId) {
-  try {
-    // إنشاء جلسة جديدة للفصل
-    const createSession = firebase.functions().httpsCallable('createClassSession');
-    const result = await createSession({ classId: classId });
+    // Toggle sidebar on mobile
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('active');
+    }
     
-    // الانتقال إلى صفحة الفصل الافتراضي
-    window.location.href = `classroom.html?sessionId=${result.data.sessionId}`;
-    
-  } catch (error) {
-    console.error('Error entering class:', error);
-    alert('حدث خطأ أثناء الدخول للفصل الافتراضي');
-  }
-}
+    // Load teachers for filter dropdown
+    async function loadTeachers() {
+      try {
+        const querySnapshot = await db.collection("teachers")
+          .orderBy("fullName")
+          .get();
+        
+        teachers = [];
+        querySnapshot.forEach(doc => {
+          const teacher = doc.data();
+          teacher.id = doc.id;
+          teachers.push(teacher);
+        });
+        
+        // Populate teacher filter dropdown
+        const teacherFilter = document.getElementById('teacherFilter');
+        teachers.forEach(teacher => {
+          const option = document.createElement('option');
+          option.value = teacher.id;
+          option.textContent = teacher.fullName;
+          teacherFilter.appendChild(option);
+        });
+        
+      } catch (error) {
+        console.error("Error loading teachers:", error);
+      }
+    }
+
+    // Load classes from Firestore
+    async function loadClasses() {
+      try {
+        const querySnapshot = await db.collection("classes")
+          .orderBy("createdAt", "desc")
+          .get();
+        
+        classes = [];
+        querySnapshot.forEach(doc => {
+          const classData = doc.data();
+          classData.id = doc.id;
+          classes.push(classData);
+        });
+        
+        filterClasses();
+        
+      } catch (error) {
+        console.error("Error loading classes:", error);
+        document.getElementById('classesContainer').innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #e74c3c;">
+            <i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء تحميل الفصول الدراسية
+          </div>
+        `;
+      }
+    }
+
+    // Filter classes based on selected filters
+    function filterClasses() {
+      const statusValue = document.getElementById('statusFilter').value;
+      const subjectValue = document.getElementById('subjectFilter').value;
+      const teacherValue = document.getElementById('teacherFilter').value;
+      const searchValue = document.getElementById('searchInput').value.toLowerCase();
+      const globalSearchValue = document.getElementById('globalSearch').value.toLowerCase();
+      
+      filteredClasses = classes.filter(classItem => {
+        // Status filter
+        const statusMatch = statusValue === 'all' || classItem.status === statusValue;
+        
+        // Subject filter
+        const subjectMatch = subjectValue === 'all' || classItem.subject === subjectValue;
+        
+        // Teacher filter
+        const teacherMatch = teacherValue === 'all' || classItem.teacherId === teacherValue;
+        
+        // Search filter
+        let searchMatch = true;
+        if (searchValue) {
+          searchMatch = classItem.name && classItem.name.toLowerCase().includes(searchValue);
+        }
+        
+        // Global search filter
+        let globalSearchMatch = true;
+        if (globalSearchValue) {
+          globalSearchMatch = (classItem.name && classItem.name.toLowerCase().includes(globalSearchValue)) || 
+                             (classItem.description && classItem.description.toLowerCase().includes(globalSearchValue));
+        }
+        
+        return statusMatch && subjectMatch && teacherMatch && searchMatch && globalSearchMatch;
+      });
+      
+      renderClasses();
+    }
+
+    // Render classes to the grid
+    function renderClasses() {
+      const container = document.getElementById('classesContainer');
+      
+      if (filteredClasses.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 30px;">
+            لا توجد فصول متاحة تطابق معايير البحث
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = filteredClasses.map(classItem => {
+        // Find teacher data
+        const teacher = teachers.find(t => t.id === classItem.teacherId) || {};
+        
+        // Get status badge
+        let statusBadge = '';
+        if (classItem.status === 'active') {
+          statusBadge = '<span class="status-badge status-active">نشط</span>';
+        } else if (classItem.status === 'finished') {
+          statusBadge = '<span class="status-badge status-finished">منتهي</span>';
+        } else {
+          statusBadge = '<span class="status-badge status-pending">في انتظار</span>';
+        }
+        
+        // Format schedule
+        const schedule = classItem.schedule ? 
+          classItem.schedule.map(day => {
+            const daysMap = {
+              'sunday': 'الأحد',
+              'monday': 'الإثنين',
+              'tuesday': 'الثلاثاء',
+              'wednesday': 'الأربعاء',
+              'thursday': 'الخميس',
+              'friday': 'الجمعة',
+              'saturday': 'السبت'
+            };
+            return daysMap[day] || day;
+          }).join('، ') : 'غير محدد';
+        
+        // Format time
+        const time = classItem.startTime && classItem.endTime ? 
+          `${classItem.startTime} - ${classItem.endTime}` : 'غير محدد';
+        
+        // Format level
+        const level = classItem.level ? 
+          classItem.level.replace('primary', 'ابتدائي')
+                        .replace('prep', 'إعدادي')
+                        .replace('secondary', 'ثانوي')
+                        .replace('university', 'جامعي') : 'غير محدد';
+        
+        return `
+          <div class="class-card" data-id="${classItem.id}" data-status="${classItem.status || ''}" data-subject="${classItem.subject || ''}" data-teacher="${classItem.teacherId || ''}">
+            <div class="class-header" style="background: ${getSubjectColor(classItem.subject)}">
+              <h3>${classItem.name || 'فصل بدون عنوان'}</h3>
+              ${statusBadge}
+            </div>
+            <div class="class-body">
+              <div class="class-info">
+                <div class="class-info-item">
+                  <i class="fas fa-calendar-alt"></i>
+                  <span>${schedule}</span>
+                </div>
+                <div class="class-info-item">
+                  <i class="fas fa-clock"></i>
+                  <span>${time}</span>
+                </div>
+                <div class="class-info-item">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>${level}</span>
+                </div>
+              </div>
+              <div class="class-teacher">
+                <img src="${teacher.avatarUrl || 'https://randomuser.me/api/portraits/men/11.jpg'}" alt="المدرس">
+                <span>${teacher.fullName || 'غير محدد'}</span>
+              </div>
+              <div class="class-stats">
+                <div class="stat-item">
+                  <div class="stat-value">${classItem.studentsCount || 0}</div>
+                  <div class="stat-label">طالب</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">${classItem.sessionsCount || 0}</div>
+                  <div class="stat-label">حصة</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">${classItem.attendanceRate || 0}%</div>
+                  <div class="stat-label">حضور</div>
+                </div>
+              </div>
+              <div class="class-actions">
+                <button class="class-btn enter-btn" onclick="enterClass('${classItem.id}')">
+                  <i class="fas fa-door-open"></i> دخول
+                </button>
+                <button class="class-btn edit-btn" onclick="editClass('${classItem.id}')">
+                  <i class="fas fa-edit"></i> تعديل
+                </button>
+                <button class="class-btn delete-btn" onclick="showDeleteModal('${classItem.id}')">
+                  <i class="fas fa-trash"></i> حذف
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Add "Add New" card
+      container.innerHTML += `
+        <div class="class-card">
+          <div class="add-new-class" onclick="window.location.href='edit_class.html'">
+            <i class="fas fa-plus-circle"></i>
+            <h3>إضافة فصل جديد</h3>
+          </div>
+        </div>
+      `;
+    }
+
+    // Get color based on subject
+    function getSubjectColor(subject) {
+      const colors = {
+        'math': '#3498db',
+        'physics': '#9b59b6',
+        'chemistry': '#2ecc71',
+        'biology': '#1abc9c',
+        'english': '#e74c3c',
+        'arabic': '#f39c12',
+        'history': '#d35400',
+        'geography': '#16a085',
+        'default': '#3498db'
+      };
+      return colors[subject] || colors['default'];
+    }
+
+    // Enter virtual class
+    window.enterClass = function(classId) {
+      window.location.href = `classroom.html?classId=${classId}`;
+    };
+
+    // Edit class
+    window.editClass = function(classId) {
+      window.location.href = `edit_class.html?id=${classId}`;
+    };
+
+    // Show delete confirmation modal
+    window.showDeleteModal = function(classId) {
+      currentClassToDelete = classId;
+      document.getElementById('deleteModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    // Close delete modal
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      currentClassToDelete = null;
+    }
+
+    // Confirm delete class
+    async function confirmDeleteClass() {
+      if (!currentClassToDelete) return;
+      
+      try {
+        await db.collection("classes").doc(currentClassToDelete).delete();
+        alert("تم حذف الفصل بنجاح");
+        loadClasses();
+        closeDeleteModal();
+      } catch (error) {
+        console.error("Error deleting class:", error);
+        alert("حدث خطأ أثناء حذف الفصل");
+      }
+    }
   </script>
-
 </body>
 </html>
